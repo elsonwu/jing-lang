@@ -1,8 +1,8 @@
 use std::fmt;
 use std::collections::HashMap;
-use crate::error::{JiLangError, JiResult};
+use crate::error::{JingError, JingResult};
 
-/// Values in JiLang are dynamically typed
+/// Values in Jing are dynamically typed
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Nil,
@@ -71,14 +71,14 @@ impl Value {
     }
 
     /// Convert value to number if possible
-    pub fn to_number(&self) -> JiResult<f64> {
+    pub fn to_number(&self) -> JingResult<f64> {
         match self {
             Value::Number(n) => Ok(*n),
             Value::String(s) => {
                 s.parse::<f64>()
-                    .map_err(|_| JiLangError::type_error(format!("Cannot convert '{}' to number", s)))
+                    .map_err(|_| JingError::type_error(format!("Cannot convert '{}' to number", s)))
             }
-            _ => Err(JiLangError::type_error(format!(
+            _ => Err(JingError::type_error(format!(
                 "Cannot convert {} to number",
                 self.type_name()
             ))),
@@ -86,13 +86,13 @@ impl Value {
     }
 
     /// Add two values
-    pub fn add(&self, other: &Value) -> JiResult<Value> {
+    pub fn add(&self, other: &Value) -> JingResult<Value> {
         match (self, other) {
             (Value::Number(a), Value::Number(b)) => Ok(Value::Number(a + b)),
             (Value::String(a), Value::String(b)) => Ok(Value::String(format!("{}{}", a, b))),
             (Value::String(a), other) => Ok(Value::String(format!("{}{}", a, other))),
             (self_val, Value::String(b)) => Ok(Value::String(format!("{}{}", self_val, b))),
-            _ => Err(JiLangError::type_error(format!(
+            _ => Err(JingError::type_error(format!(
                 "Cannot add {} and {}",
                 self.type_name(),
                 other.type_name()
@@ -101,10 +101,10 @@ impl Value {
     }
 
     /// Subtract two values
-    pub fn subtract(&self, other: &Value) -> JiResult<Value> {
+    pub fn subtract(&self, other: &Value) -> JingResult<Value> {
         match (self, other) {
             (Value::Number(a), Value::Number(b)) => Ok(Value::Number(a - b)),
-            _ => Err(JiLangError::type_error(format!(
+            _ => Err(JingError::type_error(format!(
                 "Cannot subtract {} and {}",
                 self.type_name(),
                 other.type_name()
@@ -113,10 +113,10 @@ impl Value {
     }
 
     /// Multiply two values
-    pub fn multiply(&self, other: &Value) -> JiResult<Value> {
+    pub fn multiply(&self, other: &Value) -> JingResult<Value> {
         match (self, other) {
             (Value::Number(a), Value::Number(b)) => Ok(Value::Number(a * b)),
-            _ => Err(JiLangError::type_error(format!(
+            _ => Err(JingError::type_error(format!(
                 "Cannot multiply {} and {}",
                 self.type_name(),
                 other.type_name()
@@ -125,16 +125,16 @@ impl Value {
     }
 
     /// Divide two values
-    pub fn divide(&self, other: &Value) -> JiResult<Value> {
+    pub fn divide(&self, other: &Value) -> JingResult<Value> {
         match (self, other) {
             (Value::Number(a), Value::Number(b)) => {
                 if *b == 0.0 {
-                    Err(JiLangError::runtime_error("Division by zero"))
+                    Err(JingError::runtime_error("Division by zero"))
                 } else {
                     Ok(Value::Number(a / b))
                 }
             }
-            _ => Err(JiLangError::type_error(format!(
+            _ => Err(JingError::type_error(format!(
                 "Cannot divide {} and {}",
                 self.type_name(),
                 other.type_name()
@@ -143,16 +143,16 @@ impl Value {
     }
 
     /// Modulo operation
-    pub fn modulo(&self, other: &Value) -> JiResult<Value> {
+    pub fn modulo(&self, other: &Value) -> JingResult<Value> {
         match (self, other) {
             (Value::Number(a), Value::Number(b)) => {
                 if *b == 0.0 {
-                    Err(JiLangError::runtime_error("Division by zero"))
+                    Err(JingError::runtime_error("Division by zero"))
                 } else {
                     Ok(Value::Number(a % b))
                 }
             }
-            _ => Err(JiLangError::type_error(format!(
+            _ => Err(JingError::type_error(format!(
                 "Cannot modulo {} and {}",
                 self.type_name(),
                 other.type_name()
@@ -161,10 +161,10 @@ impl Value {
     }
 
     /// Negate a value
-    pub fn negate(&self) -> JiResult<Value> {
+    pub fn negate(&self) -> JingResult<Value> {
         match self {
             Value::Number(n) => Ok(Value::Number(-n)),
-            _ => Err(JiLangError::type_error(format!(
+            _ => Err(JingError::type_error(format!(
                 "Cannot negate {}",
                 self.type_name()
             ))),
@@ -188,11 +188,11 @@ impl Value {
     }
 
     /// Compare two values for less than
-    pub fn less_than(&self, other: &Value) -> JiResult<bool> {
+    pub fn less_than(&self, other: &Value) -> JingResult<bool> {
         match (self, other) {
             (Value::Number(a), Value::Number(b)) => Ok(a < b),
             (Value::String(a), Value::String(b)) => Ok(a < b),
-            _ => Err(JiLangError::type_error(format!(
+            _ => Err(JingError::type_error(format!(
                 "Cannot compare {} and {}",
                 self.type_name(),
                 other.type_name()
@@ -201,11 +201,11 @@ impl Value {
     }
 
     /// Compare two values for greater than
-    pub fn greater_than(&self, other: &Value) -> JiResult<bool> {
+    pub fn greater_than(&self, other: &Value) -> JingResult<bool> {
         match (self, other) {
             (Value::Number(a), Value::Number(b)) => Ok(a > b),
             (Value::String(a), Value::String(b)) => Ok(a > b),
-            _ => Err(JiLangError::type_error(format!(
+            _ => Err(JingError::type_error(format!(
                 "Cannot compare {} and {}",
                 self.type_name(),
                 other.type_name()
@@ -243,26 +243,26 @@ impl Environment {
         }
     }
 
-    pub fn get(&self, name: &str) -> JiResult<Value> {
+    pub fn get(&self, name: &str) -> JingResult<Value> {
         for scope in self.scopes.iter().rev() {
             if let Some(value) = scope.get(name) {
                 return Ok(value.clone());
             }
         }
-        Err(JiLangError::runtime_error(format!(
+        Err(JingError::runtime_error(format!(
             "Undefined variable '{}'",
             name
         )))
     }
 
-    pub fn set(&mut self, name: &str, value: Value) -> JiResult<()> {
+    pub fn set(&mut self, name: &str, value: Value) -> JingResult<()> {
         for scope in self.scopes.iter_mut().rev() {
             if scope.contains_key(name) {
                 scope.insert(name.to_string(), value);
                 return Ok(());
             }
         }
-        Err(JiLangError::runtime_error(format!(
+        Err(JingError::runtime_error(format!(
             "Undefined variable '{}'",
             name
         )))

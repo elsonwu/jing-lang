@@ -1,10 +1,10 @@
-# JiLang Language Reference
+# Jing Language Reference
 
 ## Variables
 
 Variables are declared using the `let` keyword:
 
-```jilang
+```jing
 let x = 42;
 let name = "Hello";
 let flag = true;
@@ -12,7 +12,7 @@ let flag = true;
 
 ## Data Types
 
-JiLang supports the following data types:
+Jing supports the following data types:
 
 - **Numbers**: `42`, `3.14`, `-7.5`
 - **Strings**: `"Hello, World!"`, `""`
@@ -46,7 +46,7 @@ JiLang supports the following data types:
 
 ### If Statements
 
-```jilang
+```jing
 if condition {
     // statements
 } else {
@@ -56,7 +56,7 @@ if condition {
 
 ### While Loops
 
-```jilang
+```jing
 while condition {
     // statements
 }
@@ -66,7 +66,7 @@ while condition {
 
 Function declarations:
 
-```jilang
+```jing
 fn function_name(param1, param2) {
     // statements
     return value; // optional
@@ -75,7 +75,7 @@ fn function_name(param1, param2) {
 
 Function calls:
 
-```jilang
+```jing
 let result = function_name(arg1, arg2);
 ```
 
@@ -87,7 +87,7 @@ let result = function_name(arg1, arg2);
 
 Single-line comments start with `//`:
 
-```jilang
+```jing
 // This is a comment
 let x = 42; // This is also a comment
 ```
@@ -95,12 +95,12 @@ let x = 42; // This is also a comment
 ## Examples
 
 ### Hello World
-```jilang
+```jing
 print("Hello, World!");
 ```
 
 ### Variables and Arithmetic
-```jilang
+```jing
 let a = 10;
 let b = 20;
 let sum = a + b;
@@ -108,13 +108,13 @@ print(sum); // Outputs: 30
 ```
 
 ### String Operations
-```jilang
+```jing
 let greeting = "Hello, " + "World!";
 print(greeting); // Outputs: Hello, World!
 ```
 
 ### Control Flow
-```jilang
+```jing
 let x = 15;
 if x > 10 {
     print("x is greater than 10");
@@ -124,7 +124,7 @@ if x > 10 {
 ```
 
 ### Functions
-```jilang
+```jing
 fn square(n) {
     return n * n;
 }
@@ -134,7 +134,7 @@ print(result); // Outputs: 25
 ```
 
 ### Loops
-```jilang
+```jing
 let i = 1;
 while i <= 5 {
     print(i);
@@ -142,11 +142,11 @@ while i <= 5 {
 }
 ```
 
-## Running JiLang
+## Running Jing
 
 ### From File
 ```bash
-cargo run script.jl
+cargo run script.jing
 ```
 
 ### Interactive REPL
@@ -156,7 +156,7 @@ cargo run
 
 ## Error Handling
 
-JiLang provides clear error messages for:
+Jing provides clear error messages for:
 
 - Lexical errors (invalid characters)
 - Parse errors (syntax errors)

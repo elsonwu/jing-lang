@@ -1,9 +1,9 @@
-use crate::error::{JiLangError, JiResult};
+use crate::error::{JingError, JingResult};
 use crate::parser::*;
 use crate::value::Value;
 use std::collections::HashMap;
 
-/// Bytecode instructions for the JiLang VM
+/// Bytecode instructions for the Jing VM
 #[derive(Debug, Clone, PartialEq)]
 pub enum OpCode {
     /// Push a constant onto the stack
@@ -118,7 +118,7 @@ impl Compiler {
     }
 
     /// Compile a list of statements to bytecode
-    pub fn compile(&mut self, statements: Vec<Stmt>) -> JiResult<Chunk> {
+    pub fn compile(&mut self, statements: Vec<Stmt>) -> JingResult<Chunk> {
         for stmt in statements {
             self.compile_statement(stmt)?;
         }
@@ -127,7 +127,7 @@ impl Compiler {
         Ok(std::mem::replace(&mut self.chunk, Chunk::new()))
     }
 
-    fn compile_statement(&mut self, stmt: Stmt) -> JiResult<()> {
+    fn compile_statement(&mut self, stmt: Stmt) -> JingResult<()> {
         match stmt {
             Stmt::Expression(expr_stmt) => {
                 self.compile_expression(expr_stmt.expr)?;
@@ -174,7 +174,7 @@ impl Compiler {
         Ok(())
     }
 
-    fn compile_expression(&mut self, expr: Expr) -> JiResult<()> {
+    fn compile_expression(&mut self, expr: Expr) -> JingResult<()> {
         match expr {
             Expr::Literal(literal) => {
                 let value = match literal.value {
@@ -204,7 +204,7 @@ impl Compiler {
         Ok(())
     }
 
-    fn compile_binary_expression(&mut self, binary: BinaryExpr) -> JiResult<()> {
+    fn compile_binary_expression(&mut self, binary: BinaryExpr) -> JingResult<()> {
         self.compile_expression(*binary.left)?;
         self.compile_expression(*binary.right)?;
 
@@ -224,7 +224,7 @@ impl Compiler {
         Ok(())
     }
 
-    fn compile_unary_expression(&mut self, unary: UnaryExpr) -> JiResult<()> {
+    fn compile_unary_expression(&mut self, unary: UnaryExpr) -> JingResult<()> {
         self.compile_expression(*unary.operand)?;
 
         match unary.operator {
@@ -234,7 +234,7 @@ impl Compiler {
         Ok(())
     }
 
-    fn compile_logical_expression(&mut self, logical: LogicalExpr) -> JiResult<()> {
+    fn compile_logical_expression(&mut self, logical: LogicalExpr) -> JingResult<()> {
         match logical.operator {
             LogicalOperator::And => {
                 self.compile_expression(*logical.left)?;
@@ -269,13 +269,13 @@ impl Compiler {
         Ok(())
     }
 
-    fn compile_call_expression(&mut self, call: CallExpr) -> JiResult<()> {
+    fn compile_call_expression(&mut self, call: CallExpr) -> JingResult<()> {
         // Handle built-in functions
         if let Expr::Variable(var) = call.callee.as_ref() {
             match var.name.as_str() {
                 "print" => {
                     if call.args.len() != 1 {
-                        return Err(JiLangError::compile_error(
+                        return Err(JingError::compile_error(
                             "print() expects exactly 1 argument"
                         ));
                     }
@@ -285,25 +285,25 @@ impl Compiler {
                 }
                 "len" => {
                     if call.args.len() != 1 {
-                        return Err(JiLangError::compile_error(
+                        return Err(JingError::compile_error(
                             "len() expects exactly 1 argument"
                         ));
                     }
                     self.compile_expression(call.args[0].clone())?;
                     // For now, we'll implement len as a simple operation
                     // In a real implementation, you'd add a LEN opcode
-                    return Err(JiLangError::compile_error("len() not yet implemented"));
+                    return Err(JingError::compile_error("len() not yet implemented"));
                 }
                 "str" => {
                     if call.args.len() != 1 {
-                        return Err(JiLangError::compile_error(
+                        return Err(JingError::compile_error(
                             "str() expects exactly 1 argument"
                         ));
                     }
                     self.compile_expression(call.args[0].clone())?;
                     // For now, we'll implement str as a simple operation
                     // In a real implementation, you'd add a STR opcode
-                    return Err(JiLangError::compile_error("str() not yet implemented"));
+                    return Err(JingError::compile_error("str() not yet implemented"));
                 }
                 _ => {}
             }
@@ -320,7 +320,7 @@ impl Compiler {
         Ok(())
     }
 
-    fn compile_if_statement(&mut self, if_stmt: IfStmt) -> JiResult<()> {
+    fn compile_if_statement(&mut self, if_stmt: IfStmt) -> JingResult<()> {
         self.compile_expression(if_stmt.condition)?;
         
         let then_jump = self.chunk.current_address();
@@ -350,7 +350,7 @@ impl Compiler {
         Ok(())
     }
 
-    fn compile_while_statement(&mut self, while_stmt: WhileStmt) -> JiResult<()> {
+    fn compile_while_statement(&mut self, while_stmt: WhileStmt) -> JingResult<()> {
         let loop_start = self.chunk.current_address();
         
         self.compile_expression(while_stmt.condition)?;
@@ -370,7 +370,7 @@ impl Compiler {
         Ok(())
     }
 
-    fn compile_function_declaration(&mut self, func_stmt: FunctionStmt) -> JiResult<()> {
+    fn compile_function_declaration(&mut self, func_stmt: FunctionStmt) -> JingResult<()> {
         // Jump over the function body during normal execution
         let skip_jump = self.chunk.current_address();
         self.chunk.emit(OpCode::Jump(0)); // Will be patched

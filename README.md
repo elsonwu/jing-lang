@@ -1,6 +1,6 @@
-# JiLang - A Simple Toy Language with Virtual Machine
+# Jing - A Simple Toy Language with Virtual Machine
 
-JiLang is a simple, extensible toy programming language implemented in Rust with its own virtual machine. It's designed to be easy to understand, modify, and extend for educational purposes and experimentation.
+Jing is a simple, extensible toy programming language implemented in Rust with its own virtual machine. It's designed to be easy to understand, modify, and extend for educational purposes and experimentation.
 
 ## 🎯 Design Goals
 
@@ -11,7 +11,7 @@ JiLang is a simple, extensible toy programming language implemented in Rust with
 
 ## 🏗️ Architecture
 
-The JiLang implementation consists of several key components:
+The Jing implementation consists of several key components:
 
 ```
 Source Code → Lexer → Parser → Compiler → Bytecode → Virtual Machine → Output
@@ -44,24 +44,24 @@ Source Code → Lexer → Parser → Compiler → Bytecode → Virtual Machine �
 
 ## 📝 Language Syntax
 
-JiLang supports the following features:
+Jing supports the following features:
 
 ### Variables and Assignment
-```jilang
+```jing
 let x = 42;
 let name = "World";
 let flag = true;
 ```
 
 ### Arithmetic Operations
-```jilang
+```jing
 let result = (10 + 5) * 2 - 3;
 let quotient = 20 / 4;
 let remainder = 17 % 5;
 ```
 
 ### Comparison and Logical Operations
-```jilang
+```jing
 let is_equal = x == 42;
 let is_greater = x > 10;
 let both_true = flag && is_equal;
@@ -69,7 +69,7 @@ let either_true = flag || false;
 ```
 
 ### Control Flow
-```jilang
+```jing
 if x > 0 {
     print("Positive");
 } else {
@@ -82,16 +82,16 @@ while x > 0 {
 ```
 
 ### Functions
-```jilang
+```jing
 fn greet(name) {
     return "Hello, " + name + "!";
 }
 
-let message = greet("JiLang");
+let message = greet("Jing");
 ```
 
 ### Built-in Functions
-```jilang
+```jing
 print("Hello, World!");           // Output to console
 let length = len("Hello");        // String length
 let text = str(42);              // Convert to string
@@ -137,23 +137,23 @@ The VM uses a simple instruction set:
 cargo build
 
 # Run with a source file
-cargo run examples/hello.jl
+cargo run examples/hello.jing
 
 # Run the REPL
 cargo run
 ```
 
-**New to JiLang?** Check out the [`GETTING_STARTED.md`](GETTING_STARTED.md) guide for a step-by-step tutorial!
+**New to Jing?** Check out the [`GETTING_STARTED.md`](GETTING_STARTED.md) guide for a step-by-step tutorial!
 
 ### Example Programs
 
-**Hello World** (`examples/hello.jl`):
-```jilang
+**Hello World** (`examples/hello.jing`):
+```jing
 print("Hello, World!");
 ```
 
-**Fibonacci** (`examples/fibonacci.jl`):
-```jilang
+**Fibonacci** (`examples/fibonacci.jing`):
+```jing
 fn fibonacci(n) {
     if n <= 1 {
         return n;
@@ -165,8 +165,8 @@ let result = fibonacci(10);
 print("Fibonacci(10) = " + str(result));
 ```
 
-**FizzBuzz** (`examples/fizzbuzz.jl`):
-```jilang
+**FizzBuzz** (`examples/fizzbuzz.jing`):
+```jing
 let i = 1;
 while i <= 100 {
     if i % 15 == 0 {
@@ -182,9 +182,9 @@ while i <= 100 {
 }
 ```
 
-## 🔧 Extending JiLang
+## 🔧 Extending Jing
 
-The modular design makes it easy to extend JiLang:
+The modular design makes it easy to extend Jing:
 
 ### Adding New Data Types
 1. Extend the `Value` enum in `value.rs`
@@ -222,10 +222,10 @@ src/
 └── lib.rs          # Library exports
 
 examples/
-├── hello.jl        # Hello world
-├── fibonacci.jl    # Recursive fibonacci
-├── fizzbuzz.jl     # FizzBuzz implementation
-└── calculator.jl   # Simple calculator
+├── hello.jing        # Hello world
+├── fibonacci.jing    # Recursive fibonacci
+├── fizzbuzz.jing     # FizzBuzz implementation
+└── calculator.jing   # Simple calculator
 
 tests/
 ├── lexer_tests.rs  # Lexer unit tests
@@ -272,4 +272,4 @@ MIT License - feel free to use this for learning and experimentation!
 
 ---
 
-*Happy coding with JiLang! 🚀*
+*Happy coding with Jing! 🚀*

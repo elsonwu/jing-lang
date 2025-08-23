@@ -1,32 +1,32 @@
-# Getting Started with JiLang
+# Getting Started with Jing
 
-Welcome to JiLang! This guide will help you get up and running quickly.
+Welcome to Jing! This guide will help you get up and running quickly.
 
 ## Quick Setup
 
-1. **Clone or have the JiLang project**
+1. **Clone or have the Jing project**
 2. **Build the project:**
    ```bash
    cargo build --release
    ```
 3. **You're ready to go!**
 
-## Your First JiLang Program
+## Your First Jing Program
 
-Create a file called `hello.jl`:
+Create a file called `hello.jing`:
 
-```jilang
-print("Hello, JiLang!");
+```jing
+print("Hello, Jing!");
 ```
 
 Run it:
 ```bash
-cargo run hello.jl
+cargo run hello.jing
 ```
 
 Output:
 ```
-Hello, JiLang!
+Hello, Jing!
 ```
 
 ## Interactive Mode (REPL)
@@ -52,7 +52,7 @@ Hello, World!
 ## Basic Concepts
 
 ### Variables
-```jilang
+```jing
 let number = 42;
 let text = "Hello";
 let flag = true;
@@ -60,7 +60,7 @@ let nothing = nil;
 ```
 
 ### Math
-```jilang
+```jing
 let a = 10;
 let b = 3;
 print(a + b);  // 13
@@ -71,7 +71,7 @@ print(a % b);  // 1 (remainder)
 ```
 
 ### Strings
-```jilang
+```jing
 let first = "Hello";
 let second = "World";
 let combined = first + ", " + second + "!";
@@ -79,7 +79,7 @@ print(combined);  // Hello, World!
 ```
 
 ### Comparisons
-```jilang
+```jing
 let x = 10;
 print(x > 5);    // true
 print(x == 10);  // true
@@ -87,7 +87,7 @@ print(x != 20);  // true
 ```
 
 ### If Statements
-```jilang
+```jing
 let age = 25;
 if age >= 18 {
     print("You are an adult");
@@ -97,7 +97,7 @@ if age >= 18 {
 ```
 
 ### While Loops
-```jilang
+```jing
 let count = 1;
 while count <= 5 {
     print(count);
@@ -106,7 +106,7 @@ while count <= 5 {
 ```
 
 ### Functions (Basic)
-```jilang
+```jing
 fn greet() {
     print("Hello from a function!");
 }
@@ -115,7 +115,7 @@ greet();  // Call the function
 ```
 
 ### Functions with Return Values
-```jilang
+```jing
 fn square() {
     return 5 * 5;
 }
@@ -127,7 +127,7 @@ print(result);  // 25
 ## Example Programs
 
 ### FizzBuzz
-```jilang
+```jing
 let i = 1;
 while i <= 15 {
     if i % 15 == 0 {
@@ -144,7 +144,7 @@ while i <= 15 {
 ```
 
 ### Simple Calculator
-```jilang
+```jing
 let a = 20;
 let b = 4;
 
@@ -164,7 +164,7 @@ print(a / b);
 ## Common Mistakes
 
 ### 1. Forgetting Semicolons
-```jilang
+```jing
 // Wrong:
 let x = 42
 print(x)
@@ -175,9 +175,9 @@ print(x);
 ```
 
 ### 2. Variable Updates
-JiLang currently doesn't have assignment (only declaration), so to "update" a variable, you need to redeclare it:
+Jing currently doesn't have assignment (only declaration), so to "update" a variable, you need to redeclare it:
 
-```jilang
+```jing
 // This doesn't work yet:
 // let x = 1;
 // x = x + 1;
@@ -190,7 +190,7 @@ let x = x + 1;  // Redeclare with new value
 ### 3. Function Parameters
 Function parameters are a work in progress. For now, functions without parameters work best:
 
-```jilang
+```jing
 // This works:
 fn sayHello() {
     print("Hello!");
@@ -207,7 +207,7 @@ fn sayHello() {
 1. **Start simple**: Begin with variables and basic operations
 2. **Use the REPL**: Test small code snippets interactively
 3. **Check examples**: Look at the `examples/` folder for inspiration
-4. **Read error messages**: JiLang provides helpful error messages
+4. **Read error messages**: Jing provides helpful error messages
 5. **Experiment**: Try different combinations and see what happens!
 
 ## What's Next?
@@ -226,6 +226,6 @@ If something doesn't work as expected:
 1. Check the error message - they're designed to be helpful
 2. Try the same code in the REPL to isolate the issue
 3. Look at the example programs for reference
-4. Remember that JiLang is a learning project - some features are still evolving!
+4. Remember that Jing is a learning project - some features are still evolving!
 
 Happy coding! 🎉

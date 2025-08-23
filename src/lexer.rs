@@ -1,4 +1,4 @@
-use crate::error::{JiLangError, JiResult};
+use crate::error::{JingError, JingResult};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum TokenType {
@@ -77,7 +77,7 @@ impl Lexer {
     }
 
     /// Tokenize the entire input
-    pub fn tokenize(&mut self) -> JiResult<Vec<Token>> {
+    pub fn tokenize(&mut self) -> JingResult<Vec<Token>> {
         let mut tokens = Vec::new();
 
         while !self.is_at_end() {
@@ -91,7 +91,7 @@ impl Lexer {
     }
 
     /// Get the next token
-    fn next_token(&mut self) -> JiResult<Option<Token>> {
+    fn next_token(&mut self) -> JingResult<Option<Token>> {
         self.skip_whitespace();
 
         if self.is_at_end() {
@@ -155,7 +155,7 @@ impl Lexer {
                 if self.match_char('&') {
                     Ok(Some(Token::new(TokenType::And, start_line)))
                 } else {
-                    Err(JiLangError::lex_error(
+                    Err(JingError::lex_error(
                         format!("Unexpected character: '{}'", c),
                         start_line,
                     ))
@@ -165,7 +165,7 @@ impl Lexer {
                 if self.match_char('|') {
                     Ok(Some(Token::new(TokenType::Or, start_line)))
                 } else {
-                    Err(JiLangError::lex_error(
+                    Err(JingError::lex_error(
                         format!("Unexpected character: '{}'", c),
                         start_line,
                     ))
@@ -178,7 +178,7 @@ impl Lexer {
             }
             c if c.is_ascii_digit() => self.number(start_line),
             c if c.is_ascii_alphabetic() || c == '_' => self.identifier(start_line),
-            _ => Err(JiLangError::lex_error(
+            _ => Err(JingError::lex_error(
                 format!("Unexpected character: '{}'", c),
                 start_line,
             )),
@@ -186,7 +186,7 @@ impl Lexer {
     }
 
     /// Parse a string literal
-    fn string(&mut self, start_line: usize) -> JiResult<Option<Token>> {
+    fn string(&mut self, start_line: usize) -> JingResult<Option<Token>> {
         let mut value = String::new();
 
         while self.peek() != '"' && !self.is_at_end() {
@@ -214,7 +214,7 @@ impl Lexer {
         }
 
         if self.is_at_end() {
-            return Err(JiLangError::lex_error("Unterminated string", start_line));
+            return Err(JingError::lex_error("Unterminated string", start_line));
         }
 
         // Consume the closing "
@@ -224,7 +224,7 @@ impl Lexer {
     }
 
     /// Parse a number literal
-    fn number(&mut self, start_line: usize) -> JiResult<Option<Token>> {
+    fn number(&mut self, start_line: usize) -> JingResult<Option<Token>> {
         let start = self.current - 1;
 
         while self.peek().is_ascii_digit() {
@@ -241,14 +241,14 @@ impl Lexer {
 
         let number_str: String = self.input[start..self.current].iter().collect();
         let value = number_str.parse::<f64>().map_err(|_| {
-            JiLangError::lex_error(format!("Invalid number: {}", number_str), start_line)
+            JingError::lex_error(format!("Invalid number: {}", number_str), start_line)
         })?;
 
         Ok(Some(Token::new(TokenType::Number(value), start_line)))
     }
 
     /// Parse an identifier or keyword
-    fn identifier(&mut self, start_line: usize) -> JiResult<Option<Token>> {
+    fn identifier(&mut self, start_line: usize) -> JingResult<Option<Token>> {
         let start = self.current - 1;
 
         while self.peek().is_ascii_alphanumeric() || self.peek() == '_' {

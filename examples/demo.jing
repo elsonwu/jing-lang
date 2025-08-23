@@ -1,10 +1,10 @@
-// This is a comprehensive test of JiLang features
-print("=== JiLang Demo ===");
+// This is a comprehensive test of Jing features
+print("=== Jing Demo ===");
 
 // Variables and basic operations
 let x = 42;
 let y = 13;
-let name = "JiLang";
+let name = "Jing";
 
 print("Variables:");
 print(x);

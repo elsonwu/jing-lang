@@ -1,6 +1,6 @@
-# JiLang Compilation Pipeline Visual Guide
+# Jing Compilation Pipeline Visual Guide
 
-This document provides visual diagrams to help understand how JiLang transforms your code from text to execution.
+This document provides visual diagrams to help understand how Jing transforms your code from text to execution.
 
 ## The Complete Pipeline
 
@@ -261,7 +261,7 @@ Call Stack during execution:
 ## Memory Layout
 
 ```
-JiLang VM Memory Layout:
+Jing VM Memory Layout:
 
 ┌─────────────────────────────────────────────────────────────────┐
 │                        VM Memory                                │
@@ -285,7 +285,7 @@ JiLang VM Memory Layout:
 ├─────────────────────────────────────────────────────────────────┤
 │ Global Variables                                               │
 │ ┌─────────────────────┬──────────────────────────────────────┐   │
-│ │ "x" → Number(42)    │ "name" → String("JiLang")          │   │
+│ │ "x" → Number(42)    │ "name" → String("Jing")          │   │
 │ │ "flag" → Bool(true) │ "add" → Function(...)              │   │
 │ └─────────────────────┴──────────────────────────────────────┘   │
 ├─────────────────────────────────────────────────────────────────┤
@@ -297,4 +297,4 @@ JiLang VM Memory Layout:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-This visual guide should help anyone understand how JiLang transforms source code into executable instructions, step by step!
+This visual guide should help anyone understand how Jing transforms source code into executable instructions, step by step!

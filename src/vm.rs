@@ -1,5 +1,5 @@
 use crate::compiler::{Chunk, OpCode};
-use crate::error::{JiLangError, JiResult};
+use crate::error::{JingError, JingResult};
 use crate::value::{Value, Environment};
 
 /// Call frame for function calls
@@ -11,7 +11,7 @@ struct CallFrame {
     stack_base: usize,
 }
 
-/// Virtual Machine for executing JiLang bytecode
+/// Virtual Machine for executing Jing bytecode
 pub struct VM {
     chunk: Chunk,
     ip: usize,           // Instruction pointer
@@ -32,14 +32,14 @@ impl VM {
     }
 
     /// Load and execute a chunk of bytecode
-    pub fn interpret(&mut self, chunk: Chunk) -> JiResult<()> {
+    pub fn interpret(&mut self, chunk: Chunk) -> JingResult<()> {
         self.chunk = chunk;
         self.ip = 0;
         self.run()
     }
 
     /// Main execution loop
-    fn run(&mut self) -> JiResult<()> {
+    fn run(&mut self) -> JingResult<()> {
         loop {
             if self.ip >= self.chunk.code.len() {
                 break;
@@ -54,7 +54,7 @@ impl VM {
                         let value = self.chunk.constants[index].clone();
                         self.push(value);
                     } else {
-                        return Err(JiLangError::runtime_error("Invalid constant index"));
+                        return Err(JingError::runtime_error("Invalid constant index"));
                     }
                 }
 
@@ -223,13 +223,13 @@ impl VM {
         Ok(())
     }
 
-    fn call_function(&mut self, arity: usize) -> JiResult<()> {
+    fn call_function(&mut self, arity: usize) -> JingResult<()> {
         let function = self.peek_at(arity)?;
         
         match function {
             Value::Function { name, arity: expected_arity, chunk_start } => {
                 if arity != expected_arity {
-                    return Err(JiLangError::runtime_error(format!(
+                    return Err(JingError::runtime_error(format!(
                         "Function '{}' expects {} arguments, got {}",
                         name, expected_arity, arity
                     )));
@@ -252,7 +252,7 @@ impl VM {
                 self.stack.remove(function_index);
             }
             _ => {
-                return Err(JiLangError::runtime_error(
+                return Err(JingError::runtime_error(
                     "Can only call functions"
                 ));
             }
@@ -267,23 +267,23 @@ impl VM {
     }
 
     /// Pop a value from the stack
-    fn pop(&mut self) -> JiResult<Value> {
+    fn pop(&mut self) -> JingResult<Value> {
         self.stack.pop().ok_or_else(|| {
-            JiLangError::runtime_error("Stack underflow")
+            JingError::runtime_error("Stack underflow")
         })
     }
 
     /// Peek at the top of the stack without popping
-    fn peek(&self) -> JiResult<Value> {
+    fn peek(&self) -> JingResult<Value> {
         self.stack.last().cloned().ok_or_else(|| {
-            JiLangError::runtime_error("Empty stack")
+            JingError::runtime_error("Empty stack")
         })
     }
 
     /// Peek at a value at a given distance from the top of the stack
-    fn peek_at(&self, distance: usize) -> JiResult<Value> {
+    fn peek_at(&self, distance: usize) -> JingResult<Value> {
         if distance >= self.stack.len() {
-            return Err(JiLangError::runtime_error("Stack index out of bounds"));
+            return Err(JingError::runtime_error("Stack index out of bounds"));
         }
         
         let index = self.stack.len() - 1 - distance;
@@ -304,7 +304,7 @@ impl VM {
     }
 }
 
-/// REPL (Read-Eval-Print Loop) for interactive JiLang sessions
+/// REPL (Read-Eval-Print Loop) for interactive Jing sessions
 pub struct REPL {
     vm: VM,
 }
@@ -316,8 +316,8 @@ impl REPL {
         }
     }
 
-    /// Evaluate a single line of JiLang code
-    pub fn eval(&mut self, source: &str) -> JiResult<()> {
+    /// Evaluate a single line of Jing code
+    pub fn eval(&mut self, source: &str) -> JingResult<()> {
         use crate::lexer::Lexer;
         use crate::parser::Parser;
         use crate::compiler::Compiler;
@@ -335,10 +335,10 @@ impl REPL {
     }
 
     /// Start an interactive REPL session
-    pub fn run(&mut self) -> JiResult<()> {
+    pub fn run(&mut self) -> JingResult<()> {
         use std::io::{self, Write};
 
-        println!("JiLang REPL v0.1.0");
+        println!("Jing REPL v0.1.0");
         println!("Type 'exit' to quit.");
         println!();
 
@@ -385,7 +385,7 @@ mod tests {
     use crate::parser::Parser;
     use crate::compiler::Compiler;
 
-    fn run_code(source: &str) -> JiResult<VM> {
+    fn run_code(source: &str) -> JingResult<VM> {
         let mut lexer = Lexer::new(source);
         let tokens = lexer.tokenize()?;
         

@@ -1,6 +1,6 @@
-# How JiLang Works: A Beginner's Guide to Language Implementation
+# How Jing Works: A Beginner's Guide to Language Implementation
 
-This guide explains how JiLang works internally, step by step, for people who have never implemented a programming language before.
+This guide explains how Jing works internally, step by step, for people who have never implemented a programming language before.
 
 ## The Big Picture: From Text to Execution
 
@@ -10,7 +10,7 @@ When you write code in any programming language and run it, the computer doesn't
 Your Code Text → [Magic Happens] → Computer Executes It
 ```
 
-JiLang implements this "magic" through a pipeline of well-defined steps:
+Jing implements this "magic" through a pipeline of well-defined steps:
 
 ```
 Source Code → Lexer → Parser → Compiler → Virtual Machine → Output
@@ -180,9 +180,9 @@ Step 4: CONSTANT(2)      Stack: [15, 2]
 Step 5: MULTIPLY         Stack: [30]        (pops 15 and 2, pushes 30)
 ```
 
-## Value System: How JiLang Handles Different Types
+## Value System: How Jing Handles Different Types
 
-JiLang uses dynamic typing - variables can hold different types of values:
+Jing uses dynamic typing - variables can hold different types of values:
 
 ```rust
 pub enum Value {
@@ -202,7 +202,7 @@ pub enum Value {
 
 ## Error Handling: When Things Go Wrong
 
-JiLang provides helpful errors at each stage:
+Jing provides helpful errors at each stage:
 
 ### Lexer Errors:
 ```
@@ -230,7 +230,7 @@ Error: "Type error: Cannot divide number and bool"
 
 ## Memory Management: How Variables Are Stored
 
-JiLang uses an **Environment** system for variables:
+Jing uses an **Environment** system for variables:
 
 ```rust
 pub struct Environment {
@@ -244,7 +244,7 @@ pub struct Environment {
 3. **Block scope**: Variables only in `{ }` blocks
 
 ### Example:
-```jilang
+```jing
 let global = "I'm global";
 
 if true {
@@ -257,7 +257,7 @@ if true {
 ## Control Flow: How If/While Work
 
 ### If Statements:
-```jilang
+```jing
 if x > 10 {
     print("big");
 } else {
@@ -280,7 +280,7 @@ if x > 10 {
 ```
 
 ### While Loops:
-```jilang
+```jing
 while x > 0 {
     x = x - 1;
 }
@@ -313,7 +313,7 @@ This design is **educational** and **extensible**:
 - **Memory**: AST and bytecode take extra memory
 - **Complexity**: More moving parts than a simple interpreter
 
-## How to Extend JiLang
+## How to Extend Jing
 
 Want to add a new feature? Here's the process:
 
@@ -350,7 +350,7 @@ Want to add a new feature? Here's the process:
 
 This architecture is used in many real languages:
 
-- **Python**: Uses bytecode compilation (similar to JiLang)
+- **Python**: Uses bytecode compilation (similar to Jing)
 - **Java**: Compiles to JVM bytecode
 - **JavaScript V8**: Multi-stage compilation pipeline
 - **Lua**: Register-based VM (different from stack-based)
@@ -369,7 +369,7 @@ This architecture is used in many real languages:
 
 ## Conclusion
 
-JiLang demonstrates that building a programming language isn't magic - it's a series of well-defined transformations:
+Jing demonstrates that building a programming language isn't magic - it's a series of well-defined transformations:
 
 1. **Text** becomes **tokens** (lexing)
 2. **Tokens** become **structure** (parsing)  

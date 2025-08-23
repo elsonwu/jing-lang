@@ -1,4 +1,4 @@
-use crate::error::{JiLangError, JiResult};
+use crate::error::{JingError, JingResult};
 use crate::lexer::{Token, TokenType};
 
 /// Abstract Syntax Tree node types
@@ -142,7 +142,7 @@ pub struct PrintStmt {
     pub expr: Expr,
 }
 
-/// Parser for JiLang
+/// Parser for Jing
 pub struct Parser {
     tokens: Vec<Token>,
     current: usize,
@@ -154,7 +154,7 @@ impl Parser {
     }
 
     /// Parse a program (list of statements)
-    pub fn parse(&mut self) -> JiResult<Vec<Stmt>> {
+    pub fn parse(&mut self) -> JingResult<Vec<Stmt>> {
         let mut statements = Vec::new();
 
         while !self.is_at_end() {
@@ -170,7 +170,7 @@ impl Parser {
     }
 
     /// Parse a declaration
-    fn declaration(&mut self) -> JiResult<Stmt> {
+    fn declaration(&mut self) -> JingResult<Stmt> {
         if self.match_token(&TokenType::Let) {
             self.let_declaration()
         } else if self.match_token(&TokenType::Fn) {
@@ -181,7 +181,7 @@ impl Parser {
     }
 
     /// Parse a let declaration
-    fn let_declaration(&mut self) -> JiResult<Stmt> {
+    fn let_declaration(&mut self) -> JingResult<Stmt> {
         let name = self.consume_identifier("Expected variable name")?;
         
         self.consume(&TokenType::Equal, "Expected '=' after variable name")?;
@@ -194,7 +194,7 @@ impl Parser {
     }
 
     /// Parse a function declaration
-    fn function_declaration(&mut self) -> JiResult<Stmt> {
+    fn function_declaration(&mut self) -> JingResult<Stmt> {
         let name = self.consume_identifier("Expected function name")?;
         
         self.consume(&TokenType::LeftParen, "Expected '(' after function name")?;
@@ -217,7 +217,7 @@ impl Parser {
     }
 
     /// Parse a statement
-    fn statement(&mut self) -> JiResult<Stmt> {
+    fn statement(&mut self) -> JingResult<Stmt> {
         if self.match_token(&TokenType::If) {
             self.if_statement()
         } else if self.match_token(&TokenType::While) {
@@ -234,7 +234,7 @@ impl Parser {
     }
 
     /// Parse an if statement
-    fn if_statement(&mut self) -> JiResult<Stmt> {
+    fn if_statement(&mut self) -> JingResult<Stmt> {
         let condition = self.expression()?;
         let then_branch = Box::new(self.statement()?);
         
@@ -252,7 +252,7 @@ impl Parser {
     }
 
     /// Parse a while statement
-    fn while_statement(&mut self) -> JiResult<Stmt> {
+    fn while_statement(&mut self) -> JingResult<Stmt> {
         let condition = self.expression()?;
         let body = Box::new(self.statement()?);
         
@@ -260,7 +260,7 @@ impl Parser {
     }
 
     /// Parse a return statement
-    fn return_statement(&mut self) -> JiResult<Stmt> {
+    fn return_statement(&mut self) -> JingResult<Stmt> {
         let value = if self.check(&TokenType::Semicolon) {
             None
         } else {
@@ -273,14 +273,14 @@ impl Parser {
     }
 
     /// Parse a block statement
-    fn block_statement(&mut self) -> JiResult<Stmt> {
+    fn block_statement(&mut self) -> JingResult<Stmt> {
         self.consume(&TokenType::LeftBrace, "Expected '{'")?;
         let statements = self.block()?;
         Ok(Stmt::Block(BlockStmt { statements }))
     }
 
     /// Parse statements inside a block
-    fn block(&mut self) -> JiResult<Vec<Stmt>> {
+    fn block(&mut self) -> JingResult<Vec<Stmt>> {
         let mut statements = Vec::new();
 
         while !self.check(&TokenType::RightBrace) && !self.is_at_end() {
@@ -295,7 +295,7 @@ impl Parser {
     }
 
     /// Parse an expression statement
-    fn expression_statement(&mut self) -> JiResult<Stmt> {
+    fn expression_statement(&mut self) -> JingResult<Stmt> {
         let expr = self.expression()?;
         
         // Check for print function calls and convert to print statements
@@ -315,12 +315,12 @@ impl Parser {
     }
 
     /// Parse an expression
-    fn expression(&mut self) -> JiResult<Expr> {
+    fn expression(&mut self) -> JingResult<Expr> {
         self.logical_or()
     }
 
     /// Parse logical OR
-    fn logical_or(&mut self) -> JiResult<Expr> {
+    fn logical_or(&mut self) -> JingResult<Expr> {
         let mut expr = self.logical_and()?;
 
         while self.match_token(&TokenType::Or) {
@@ -336,7 +336,7 @@ impl Parser {
     }
 
     /// Parse logical AND
-    fn logical_and(&mut self) -> JiResult<Expr> {
+    fn logical_and(&mut self) -> JingResult<Expr> {
         let mut expr = self.equality()?;
 
         while self.match_token(&TokenType::And) {
@@ -352,7 +352,7 @@ impl Parser {
     }
 
     /// Parse equality operations
-    fn equality(&mut self) -> JiResult<Expr> {
+    fn equality(&mut self) -> JingResult<Expr> {
         let mut expr = self.comparison()?;
 
         while let Some(operator) = self.match_equality_operator() {
@@ -368,7 +368,7 @@ impl Parser {
     }
 
     /// Parse comparison operations
-    fn comparison(&mut self) -> JiResult<Expr> {
+    fn comparison(&mut self) -> JingResult<Expr> {
         let mut expr = self.term()?;
 
         while let Some(operator) = self.match_comparison_operator() {
@@ -384,7 +384,7 @@ impl Parser {
     }
 
     /// Parse addition and subtraction
-    fn term(&mut self) -> JiResult<Expr> {
+    fn term(&mut self) -> JingResult<Expr> {
         let mut expr = self.factor()?;
 
         while let Some(operator) = self.match_term_operator() {
@@ -400,7 +400,7 @@ impl Parser {
     }
 
     /// Parse multiplication, division, and modulo
-    fn factor(&mut self) -> JiResult<Expr> {
+    fn factor(&mut self) -> JingResult<Expr> {
         let mut expr = self.unary()?;
 
         while let Some(operator) = self.match_factor_operator() {
@@ -416,7 +416,7 @@ impl Parser {
     }
 
     /// Parse unary operations
-    fn unary(&mut self) -> JiResult<Expr> {
+    fn unary(&mut self) -> JingResult<Expr> {
         if let Some(operator) = self.match_unary_operator() {
             let expr = self.unary()?;
             return Ok(Expr::Unary(UnaryExpr {
@@ -429,7 +429,7 @@ impl Parser {
     }
 
     /// Parse function calls
-    fn call(&mut self) -> JiResult<Expr> {
+    fn call(&mut self) -> JingResult<Expr> {
         let mut expr = self.primary()?;
 
         while self.match_token(&TokenType::LeftParen) {
@@ -456,7 +456,7 @@ impl Parser {
     }
 
     /// Parse primary expressions
-    fn primary(&mut self) -> JiResult<Expr> {
+    fn primary(&mut self) -> JingResult<Expr> {
         if self.match_token(&TokenType::True) {
             return Ok(Expr::Literal(LiteralExpr {
                 value: LiteralValue::Bool(true),
@@ -503,7 +503,7 @@ impl Parser {
             return Ok(expr);
         }
 
-        Err(JiLangError::parse_error("Expected expression", self.current_line()))
+        Err(JingError::parse_error("Expected expression", self.current_line()))
     }
 
     // Helper methods for operator matching
@@ -617,21 +617,21 @@ impl Parser {
         self.tokens[self.current - 1].clone()
     }
 
-    fn consume(&mut self, token_type: &TokenType, message: &str) -> JiResult<Token> {
+    fn consume(&mut self, token_type: &TokenType, message: &str) -> JingResult<Token> {
         if self.check_token_type(token_type) {
             Ok(self.advance())
         } else {
-            Err(JiLangError::parse_error(message, self.current_line()))
+            Err(JingError::parse_error(message, self.current_line()))
         }
     }
 
-    fn consume_identifier(&mut self, message: &str) -> JiResult<String> {
+    fn consume_identifier(&mut self, message: &str) -> JingResult<String> {
         if let TokenType::Identifier(name) = &self.peek().token_type {
             let name = name.clone();
             self.advance();
             Ok(name)
         } else {
-            Err(JiLangError::parse_error(message, self.current_line()))
+            Err(JingError::parse_error(message, self.current_line()))
         }
     }
 

@@ -1,4 +1,4 @@
-use jilang::*;
+use jing::*;
 use std::env;
 use std::fs;
 use std::process;
@@ -24,15 +24,15 @@ fn main() {
             }
         }
         _ => {
-            eprintln!("Usage: {} [script.jl]", args[0]);
+            eprintln!("Usage: {} [script.jing]", args[0]);
             process::exit(1);
         }
     }
 }
 
-fn run_file(filename: &str) -> JiResult<()> {
+fn run_file(filename: &str) -> JingResult<()> {
     let source = fs::read_to_string(filename)
-        .map_err(|err| JiLangError::io_error(format!("Could not read file '{}': {}", filename, err)))?;
+        .map_err(|err| JingError::io_error(format!("Could not read file '{}': {}", filename, err)))?;
 
     let mut lexer = Lexer::new(&source);
     let tokens = lexer.tokenize()?;

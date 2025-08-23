@@ -1,11 +1,11 @@
-// Advanced JiLang Example: Simple Calculator with Functions
+// Advanced Jing Example: Simple Calculator with Functions
 
 fn add(a, b) {
     return a + b;
 }
 
 // Main program
-print("=== JiLang Calculator ===");
+print("=== Jing Calculator ===");
 
 let x = 10;
 let y = 5;

@@ -1,8 +1,8 @@
 use std::fmt;
 
-/// Error types that can occur during JiLang execution
+/// Error types that can occur during Jing execution
 #[derive(Debug, Clone, PartialEq)]
-pub enum JiLangError {
+pub enum JingError {
     /// Lexical analysis errors
     LexError { message: String, line: usize },
     /// Parsing errors
@@ -17,72 +17,72 @@ pub enum JiLangError {
     IoError { message: String },
 }
 
-impl fmt::Display for JiLangError {
+impl fmt::Display for JingError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            JiLangError::LexError { message, line } => {
+            JingError::LexError { message, line } => {
                 write!(f, "Lexical error at line {}: {}", line, message)
             }
-            JiLangError::ParseError { message, line } => {
+            JingError::ParseError { message, line } => {
                 write!(f, "Parse error at line {}: {}", line, message)
             }
-            JiLangError::CompileError { message } => {
+            JingError::CompileError { message } => {
                 write!(f, "Compilation error: {}", message)
             }
-            JiLangError::RuntimeError { message } => {
+            JingError::RuntimeError { message } => {
                 write!(f, "Runtime error: {}", message)
             }
-            JiLangError::TypeError { message } => {
+            JingError::TypeError { message } => {
                 write!(f, "Type error: {}", message)
             }
-            JiLangError::IoError { message } => {
+            JingError::IoError { message } => {
                 write!(f, "I/O error: {}", message)
             }
         }
     }
 }
 
-impl std::error::Error for JiLangError {}
+impl std::error::Error for JingError {}
 
-/// Result type for JiLang operations
-pub type JiResult<T> = Result<T, JiLangError>;
+/// Result type for Jing operations
+pub type JingResult<T> = Result<T, JingError>;
 
 /// Helper functions for creating specific error types
-impl JiLangError {
+impl JingError {
     pub fn lex_error(message: impl Into<String>, line: usize) -> Self {
-        JiLangError::LexError {
+        JingError::LexError {
             message: message.into(),
             line,
         }
     }
 
     pub fn parse_error(message: impl Into<String>, line: usize) -> Self {
-        JiLangError::ParseError {
+        JingError::ParseError {
             message: message.into(),
             line,
         }
     }
 
     pub fn compile_error(message: impl Into<String>) -> Self {
-        JiLangError::CompileError {
+        JingError::CompileError {
             message: message.into(),
         }
     }
 
     pub fn runtime_error(message: impl Into<String>) -> Self {
-        JiLangError::RuntimeError {
+        JingError::RuntimeError {
             message: message.into(),
         }
     }
 
     pub fn type_error(message: impl Into<String>) -> Self {
-        JiLangError::TypeError {
+        JingError::TypeError {
             message: message.into(),
         }
     }
 
     pub fn io_error(message: impl Into<String>) -> Self {
-        JiLangError::IoError {
+        JingError::IoError {
             message: message.into(),
         }
     }
