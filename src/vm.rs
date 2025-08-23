@@ -59,8 +59,23 @@ impl VM {
                 }
 
                 OpCode::Load(name) => {
-                    let value = self.globals.get(&name)?;
-                    self.push(value);
+                    // First try to load from globals (variables)
+                    if let Ok(value) = self.globals.get(&name) {
+                        self.push(value);
+                    } else if let Some(func_info) = self.chunk.functions.get(&name) {
+                        // If not found in globals, try to load as a function
+                        let function_value = Value::Function {
+                            name: func_info.name.clone(),
+                            arity: func_info.arity,
+                            chunk_start: func_info.start_address,
+                        };
+                        self.push(function_value);
+                    } else {
+                        return Err(JingError::runtime_error(format!(
+                            "Undefined variable or function '{}'", 
+                            name
+                        )));
+                    }
                 }
 
                 OpCode::Store(name) => {
@@ -224,7 +239,7 @@ impl VM {
     }
 
     fn call_function(&mut self, arity: usize) -> JingResult<()> {
-        let function = self.peek_at(arity)?;
+        let function = self.peek_at(0)?; // Get function from top of stack
 
         match function {
             Value::Function {
@@ -296,6 +311,11 @@ impl VM {
     /// Get the current stack for debugging
     pub fn stack(&self) -> &[Value] {
         &self.stack
+    }
+
+    /// Get a global variable by name
+    pub fn get_global(&self, name: &str) -> Option<Value> {
+        self.globals.get(name).ok()
     }
 
     /// Reset the VM state

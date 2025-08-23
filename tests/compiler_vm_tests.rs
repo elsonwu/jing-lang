@@ -8,7 +8,7 @@ fn test_compile_literals() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     // Should have opcodes for loading constant and returning
     assert!(chunk.code.len() > 0);
@@ -22,14 +22,14 @@ fn test_compile_arithmetic() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     // Should compile successfully
     assert!(chunk.code.len() > 0);
 
     // Test execution
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::Number(14.0)); // 2 + (3 * 4) = 14
 }
 
@@ -45,10 +45,10 @@ fn test_compile_variables() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::Number(30.0));
 }
 
@@ -60,10 +60,10 @@ fn test_compile_strings() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::String("Hello, World!".to_string()));
 }
 
@@ -75,10 +75,10 @@ fn test_compile_booleans() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::Bool(true));
 }
 
@@ -99,10 +99,10 @@ fn test_compile_comparisons() {
         let mut parser = Parser::new(tokens);
         let statements = parser.parse().unwrap();
         let mut compiler = Compiler::new();
-        let chunk = compiler.compile(&statements).unwrap();
+        let chunk = compiler.compile(statements).unwrap();
 
         let mut vm = VM::new();
-        let result = vm.run(&chunk).unwrap();
+        let result = vm.interpret(chunk).unwrap();
         assert_eq!(result, expected, "Failed for input: {}", input);
     }
 }
@@ -122,10 +122,10 @@ fn test_compile_if_statement() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::String("greater".to_string()));
 }
 
@@ -145,10 +145,10 @@ fn test_compile_while_loop() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::Number(3.0)); // 0 + 1 + 2 = 3
 }
 
@@ -165,10 +165,10 @@ fn test_compile_function() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::Number(8.0));
 }
 
@@ -180,13 +180,13 @@ fn test_compile_print() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     // Should compile successfully
     assert!(chunk.code.len() > 0);
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     // Print statements return nil
     assert_eq!(result, Value::Nil);
 }
@@ -208,10 +208,10 @@ fn test_compile_nested_scopes() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::Number(3.0)); // Should access innermost x
 }
 
@@ -228,10 +228,10 @@ fn test_compile_complex_expressions() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::Number(14.0)); // (2+3)*4 - 2*3 = 20 - 6 = 14
 }
 
@@ -243,10 +243,10 @@ fn test_vm_stack_operations() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     // Should return the last expression
     assert_eq!(result, Value::Number(3.0));
 }
@@ -260,10 +260,10 @@ fn test_vm_error_handling() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk);
+    let result = vm.interpret(chunk);
     assert!(result.is_err());
 }
 
@@ -276,10 +276,10 @@ fn test_vm_type_checking() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk);
+    let result = vm.interpret(chunk);
     assert!(result.is_err());
 }
 
@@ -301,10 +301,10 @@ fn test_vm_function_calls() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::Number(49.0));
 }
 
@@ -325,10 +325,10 @@ fn test_vm_recursive_functions() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::Number(8.0)); // fibonacci(6) = 8
 }
 
@@ -349,10 +349,10 @@ fn test_vm_variable_shadowing() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
 
     let mut vm = VM::new();
-    let result = vm.run(&chunk).unwrap();
+    let result = vm.interpret(chunk).unwrap();
     assert_eq!(result, Value::String("inner".to_string()));
 }
 
@@ -373,10 +373,10 @@ fn test_compile_all_operators() {
         let mut parser = Parser::new(tokens);
         let statements = parser.parse().unwrap();
         let mut compiler = Compiler::new();
-        let chunk = compiler.compile(&statements).unwrap();
+        let chunk = compiler.compile(statements).unwrap();
 
         let mut vm = VM::new();
-        let result = vm.run(&chunk).unwrap();
+        let result = vm.interpret(chunk).unwrap();
         assert_eq!(result, expected, "Failed for input: {}", input);
     }
 }
@@ -400,10 +400,10 @@ fn test_compile_logical_operators() {
         let mut parser = Parser::new(tokens);
         let statements = parser.parse().unwrap();
         let mut compiler = Compiler::new();
-        let chunk = compiler.compile(&statements).unwrap();
+        let chunk = compiler.compile(statements).unwrap();
 
         let mut vm = VM::new();
-        let result = vm.run(&chunk).unwrap();
+        let result = vm.interpret(chunk).unwrap();
         assert_eq!(result, expected, "Failed for input: {}", input);
     }
 }
