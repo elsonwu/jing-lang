@@ -10,6 +10,13 @@ pub enum Expr {
     Unary(UnaryExpr),
     Call(CallExpr),
     Logical(LogicalExpr),
+    Assign(AssignExpr),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct AssignExpr {
+    pub name: String,
+    pub value: Box<Expr>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -319,7 +326,27 @@ impl Parser {
 
     /// Parse an expression
     fn expression(&mut self) -> JingResult<Expr> {
-        self.logical_or()
+        self.assignment()
+    }
+
+    /// Parse assignment expressions
+    fn assignment(&mut self) -> JingResult<Expr> {
+        let expr = self.logical_or()?;
+
+        if self.match_token(&TokenType::Equal) {
+            let value = self.assignment()?;
+            
+            if let Expr::Variable(var) = expr {
+                return Ok(Expr::Assign(AssignExpr {
+                    name: var.name,
+                    value: Box::new(value),
+                }));
+            } else {
+                return Err(JingError::parse_error("Invalid assignment target", 0));
+            }
+        }
+
+        Ok(expr)
     }
 
     /// Parse logical OR

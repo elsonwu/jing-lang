@@ -10,6 +10,23 @@ let name = "Hello";
 let flag = true;
 ```
 
+### Variable Assignment
+
+After declaration, variables can be reassigned using the assignment operator:
+
+```jing
+let x = 10;
+x = 20;        // Reassign x to 20
+x = x + 5;     // x is now 25
+```
+
+Assignment is an expression that returns the assigned value:
+
+```jing
+let a = 5;
+let b = (a = 10); // b is 10, a is 10
+```
+
 ## Data Types
 
 Jing supports the following data types:
@@ -138,7 +155,7 @@ print(result); // Outputs: 25
 let i = 1;
 while i <= 5 {
     print(i);
-    let i = i + 1; // Re-declaration to update variable
+    i = i + 1; // Assignment expression to update variable
 }
 ```
 

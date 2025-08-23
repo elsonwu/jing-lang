@@ -101,7 +101,7 @@ if age >= 18 {
 let count = 1;
 while count <= 5 {
     print(count);
-    let count = count + 1;  // Note: redeclaring to update
+    count = count + 1;  // Assignment expression to update
 }
 ```
 
@@ -139,7 +139,7 @@ while i <= 15 {
     } else {
         print(i);
     }
-    let i = i + 1;
+    i = i + 1;
 }
 ```
 
@@ -178,28 +178,32 @@ print(x);
 Jing currently doesn't have assignment (only declaration), so to "update" a variable, you need to redeclare it:
 
 ```jing
-// This doesn't work yet:
-// let x = 1;
-// x = x + 1;
-
-// Do this instead:
+// Variable assignment now works!
 let x = 1;
-let x = x + 1;  // Redeclare with new value
+x = x + 1;  // Assignment expression - x is now 2
+
+// Assignment is an expression that returns the assigned value
+let y = (x = 10);  // x is 10, y is 10
 ```
 
 ### 3. Function Parameters
-Function parameters are a work in progress. For now, functions without parameters work best:
+Function parameters now work correctly:
 
 ```jing
-// This works:
+// Functions with parameters work:
+fn add(a, b) {
+    return a + b;
+}
+
+let result = add(5, 3);
+print(result);  // Outputs: 8
+
+// Functions without parameters also work:
 fn sayHello() {
     print("Hello!");
 }
 
-// This might not work as expected yet:
-// fn add(a, b) {
-//     return a + b;
-// }
+sayHello();  // Outputs: Hello!
 ```
 
 ## Tips for Learning

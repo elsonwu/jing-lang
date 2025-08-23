@@ -11,6 +11,20 @@ print(x);
 print(y);
 print(name);
 
+// Assignment expressions
+print("=== Assignment Demo ===");
+x = 100;
+print("After x = 100:");
+print(x);
+
+y = x + 50;
+print("After y = x + 50:");
+print(y);
+
+name = "Updated " + name;
+print("After name update:");
+print(name);
+
 // Arithmetic operations
 let sum = x + y;
 let difference = x - y;
@@ -52,7 +66,7 @@ let counter = 1;
 while counter <= 3 {
     print("Counter: ");
     print(counter);
-    let counter = counter + 1;
+    counter = counter + 1;
 }
 
 print("=== Demo Complete ===");

@@ -254,6 +254,21 @@ impl VM {
                     )));
                 }
 
+                // Get function info to access parameter names
+                let func_info = self.chunk.functions.get(&name).cloned();
+                if let Some(func_info) = func_info {
+                    // Bind arguments to parameter names in global environment
+                    // Arguments are on stack: [arg0, arg1, ..., function]
+                    let stack_len = self.stack.len();
+                    for (i, param_name) in func_info.locals.iter().enumerate() {
+                        if i < arity {
+                            let arg_index = stack_len - arity - 1 + i; // -1 for function itself
+                            let arg_value = self.stack[arg_index].clone();
+                            self.globals.define(param_name.clone(), arg_value);
+                        }
+                    }
+                }
+
                 // Create a new call frame
                 let frame = CallFrame {
                     function_name: name.clone(),
@@ -266,9 +281,11 @@ impl VM {
                 // Jump to the function's code
                 self.ip = chunk_start;
 
-                // Remove the function from the stack, leaving arguments
-                let function_index = self.stack.len() - arity - 1;
-                self.stack.remove(function_index);
+                // Remove the function and arguments from the stack
+                // We'll keep the function result handling as is
+                for _ in 0..=arity {
+                    self.stack.pop();
+                }
             }
             _ => {
                 return Err(JingError::runtime_error("Can only call functions"));

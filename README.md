@@ -48,9 +48,12 @@ Jing supports the following features:
 
 ### Variables and Assignment
 ```jing
-let x = 42;
-let name = "World";
-let flag = true;
+let x = 42;          // Variable declaration
+let name = "World";  // String variable
+let flag = true;     // Boolean variable
+
+x = x + 10;         // Variable assignment
+name = "Jing";      // Reassign string
 ```
 
 ### Arithmetic Operations

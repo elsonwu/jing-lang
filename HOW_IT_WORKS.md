@@ -93,6 +93,7 @@ pub enum Expr {
     Literal(LiteralExpr),  // 42, "hello", true
     Variable(VariableExpr), // x, myVar  
     Binary(BinaryExpr),    // x + y, a == b
+    Assign(AssignExpr),    // x = 10, y = x + 1
     // ... and more
 }
 ```

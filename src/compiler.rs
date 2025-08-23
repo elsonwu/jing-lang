@@ -127,12 +127,47 @@ impl Compiler {
             self.compile_statement(stmt)?;
         }
         
-        // Compile the last statement, but don't pop its result if it's an expression
+        // Compile the last statement, but don't pop its result if it's an expression or block
         if let Some(stmt) = last_stmt {
             match stmt {
                 Stmt::Expression(expr_stmt) => {
                     self.compile_expression(expr_stmt.expr)?;
                     // Don't pop - leave result on stack
+                }
+                Stmt::Block(block_stmt) => {
+                    // Compile block as an expression (preserve result)
+                    self.begin_scope();
+                    let mut statements = block_stmt.statements;
+                    let last_stmt = statements.pop();
+                    
+                    // Compile all statements except the last
+                    for stmt in statements {
+                        self.compile_statement(stmt)?;
+                    }
+                    
+                    // Compile the last statement, but don't pop its result if it's an expression
+                    if let Some(stmt) = last_stmt {
+                        match stmt {
+                            Stmt::Expression(expr_stmt) => {
+                                self.compile_expression(expr_stmt.expr)?;
+                                // Don't pop - leave result on stack
+                            }
+                            Stmt::Block(_) => {
+                                // Recursively handle nested blocks
+                                self.compile_statement(stmt)?;
+                                // Block statements now leave their results on stack
+                            }
+                            _ => {
+                                self.compile_statement(stmt)?;
+                                // Non-expression statements don't leave values, so push nil
+                                self.chunk.emit_constant(Value::Nil);
+                            }
+                        }
+                    } else {
+                        // Empty block returns nil
+                        self.chunk.emit_constant(Value::Nil);
+                    }
+                    self.end_scope();
                 }
                 _ => {
                     self.compile_statement(stmt)?;
@@ -165,8 +200,30 @@ impl Compiler {
             }
             Stmt::Block(block_stmt) => {
                 self.begin_scope();
-                for stmt in block_stmt.statements {
+                let mut statements = block_stmt.statements;
+                let last_stmt = statements.pop();
+                
+                // Compile all statements except the last
+                for stmt in statements {
                     self.compile_statement(stmt)?;
+                }
+                
+                // Compile the last statement, but don't pop its result if it's an expression
+                if let Some(stmt) = last_stmt {
+                    match stmt {
+                        Stmt::Expression(expr_stmt) => {
+                            self.compile_expression(expr_stmt.expr)?;
+                            // Don't pop - leave result on stack
+                        }
+                        _ => {
+                            self.compile_statement(stmt)?;
+                            // Non-expression statements don't leave values, so push nil
+                            self.chunk.emit_constant(Value::Nil);
+                        }
+                    }
+                } else {
+                    // Empty block returns nil
+                    self.chunk.emit_constant(Value::Nil);
                 }
                 self.end_scope();
             }
@@ -216,6 +273,14 @@ impl Compiler {
             }
             Expr::Call(call) => {
                 self.compile_call_expression(call)?;
+            }
+            Expr::Assign(assign) => {
+                // Compile the right-hand side expression
+                self.compile_expression(*assign.value)?;
+                // Store the result in the variable
+                self.chunk.emit(OpCode::Store(assign.name.clone()));
+                // Load the value back onto the stack (assignments are expressions)
+                self.chunk.emit(OpCode::Load(assign.name));
             }
         }
         Ok(())
