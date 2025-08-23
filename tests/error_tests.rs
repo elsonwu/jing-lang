@@ -81,9 +81,9 @@ fn test_runtime_errors() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
     let mut vm = VM::new();
-    let result = vm.run(&chunk);
+    let result = vm.interpret(chunk);
     assert!(result.is_err());
     match result.unwrap_err() {
         JingError::RuntimeError { message } => {
@@ -99,9 +99,9 @@ fn test_runtime_errors() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
     let mut vm = VM::new();
-    let result = vm.run(&chunk);
+    let result = vm.interpret(chunk);
     assert!(result.is_err());
 
     // Undefined variable
@@ -111,9 +111,9 @@ fn test_runtime_errors() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
     let mut vm = VM::new();
-    let result = vm.run(&chunk);
+    let result = vm.interpret(chunk);
     assert!(result.is_err());
     match result.unwrap_err() {
         JingError::RuntimeError { message } => {
@@ -132,9 +132,9 @@ fn test_type_errors() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
     let mut vm = VM::new();
-    let result = vm.run(&chunk);
+    let result = vm.interpret(chunk);
     assert!(result.is_err());
 
     // Cannot subtract strings
@@ -144,9 +144,9 @@ fn test_type_errors() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
     let mut vm = VM::new();
-    let result = vm.run(&chunk);
+    let result = vm.interpret(chunk);
     assert!(result.is_err());
 
     // Cannot multiply strings
@@ -156,9 +156,9 @@ fn test_type_errors() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
     let mut vm = VM::new();
-    let result = vm.run(&chunk);
+    let result = vm.interpret(chunk);
     assert!(result.is_err());
 
     // Cannot negate string
@@ -168,9 +168,9 @@ fn test_type_errors() {
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
-    let chunk = compiler.compile(&statements).unwrap();
+    let chunk = compiler.compile(statements).unwrap();
     let mut vm = VM::new();
-    let result = vm.run(&chunk);
+    let result = vm.interpret(chunk);
     assert!(result.is_err());
 }
 

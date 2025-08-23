@@ -318,6 +318,15 @@ impl VM {
         self.globals.get(name).ok()
     }
 
+    /// Get the top value from the stack (result of last expression)
+    pub fn get_result(&self) -> JingResult<Value> {
+        if self.stack.is_empty() {
+            Ok(Value::Nil)
+        } else {
+            Ok(self.stack[self.stack.len() - 1].clone())
+        }
+    }
+
     /// Reset the VM state
     pub fn reset(&mut self) {
         self.ip = 0;

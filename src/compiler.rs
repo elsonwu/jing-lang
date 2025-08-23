@@ -119,8 +119,25 @@ impl Compiler {
 
     /// Compile a list of statements to bytecode
     pub fn compile(&mut self, statements: Vec<Stmt>) -> JingResult<Chunk> {
+        let mut statements = statements;
+        let last_stmt = statements.pop();
+        
+        // Compile all statements except the last
         for stmt in statements {
             self.compile_statement(stmt)?;
+        }
+        
+        // Compile the last statement, but don't pop its result if it's an expression
+        if let Some(stmt) = last_stmt {
+            match stmt {
+                Stmt::Expression(expr_stmt) => {
+                    self.compile_expression(expr_stmt.expr)?;
+                    // Don't pop - leave result on stack
+                }
+                _ => {
+                    self.compile_statement(stmt)?;
+                }
+            }
         }
 
         self.chunk.emit(OpCode::Halt);
