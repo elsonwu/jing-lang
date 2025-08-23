@@ -8,86 +8,70 @@ fn test_parse_literals() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     assert_eq!(statements.len(), 1);
     match &statements[0] {
-        Stmt::Expression(expr_stmt) => {
-            match &expr_stmt.expr {
-                Expr::Literal(literal) => {
-                    match &literal.value {
-                        LiteralValue::Number(n) => assert_eq!(*n, 42.0),
-                        _ => panic!("Expected number literal"),
-                    }
-                }
-                _ => panic!("Expected literal expression"),
-            }
-        }
+        Stmt::Expression(expr_stmt) => match &expr_stmt.expr {
+            Expr::Literal(literal) => match &literal.value {
+                LiteralValue::Number(n) => assert_eq!(*n, 42.0),
+                _ => panic!("Expected number literal"),
+            },
+            _ => panic!("Expected literal expression"),
+        },
         _ => panic!("Expected expression statement"),
     }
-    
+
     // String literal
     let input = r#""hello";"#;
     let mut lexer = Lexer::new(input);
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
-        Stmt::Expression(expr_stmt) => {
-            match &expr_stmt.expr {
-                Expr::Literal(literal) => {
-                    match &literal.value {
-                        LiteralValue::String(s) => assert_eq!(s, "hello"),
-                        _ => panic!("Expected string literal"),
-                    }
-                }
-                _ => panic!("Expected literal expression"),
-            }
-        }
+        Stmt::Expression(expr_stmt) => match &expr_stmt.expr {
+            Expr::Literal(literal) => match &literal.value {
+                LiteralValue::String(s) => assert_eq!(s, "hello"),
+                _ => panic!("Expected string literal"),
+            },
+            _ => panic!("Expected literal expression"),
+        },
         _ => panic!("Expected expression statement"),
     }
-    
+
     // Boolean literals
     let input = "true;";
     let mut lexer = Lexer::new(input);
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
-        Stmt::Expression(expr_stmt) => {
-            match &expr_stmt.expr {
-                Expr::Literal(literal) => {
-                    match &literal.value {
-                        LiteralValue::Bool(b) => assert_eq!(*b, true),
-                        _ => panic!("Expected bool literal"),
-                    }
-                }
-                _ => panic!("Expected literal expression"),
-            }
-        }
+        Stmt::Expression(expr_stmt) => match &expr_stmt.expr {
+            Expr::Literal(literal) => match &literal.value {
+                LiteralValue::Bool(b) => assert_eq!(*b, true),
+                _ => panic!("Expected bool literal"),
+            },
+            _ => panic!("Expected literal expression"),
+        },
         _ => panic!("Expected expression statement"),
     }
-    
+
     // Nil literal
     let input = "nil;";
     let mut lexer = Lexer::new(input);
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
-        Stmt::Expression(expr_stmt) => {
-            match &expr_stmt.expr {
-                Expr::Literal(literal) => {
-                    match &literal.value {
-                        LiteralValue::Nil => (),
-                        _ => panic!("Expected nil literal"),
-                    }
-                }
-                _ => panic!("Expected literal expression"),
-            }
-        }
+        Stmt::Expression(expr_stmt) => match &expr_stmt.expr {
+            Expr::Literal(literal) => match &literal.value {
+                LiteralValue::Nil => (),
+                _ => panic!("Expected nil literal"),
+            },
+            _ => panic!("Expected literal expression"),
+        },
         _ => panic!("Expected expression statement"),
     }
 }
@@ -99,17 +83,15 @@ fn test_parse_variables() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     assert_eq!(statements.len(), 1);
     match &statements[0] {
-        Stmt::Expression(expr_stmt) => {
-            match &expr_stmt.expr {
-                Expr::Variable(var) => {
-                    assert_eq!(var.name, "x");
-                }
-                _ => panic!("Expected variable expression"),
+        Stmt::Expression(expr_stmt) => match &expr_stmt.expr {
+            Expr::Variable(var) => {
+                assert_eq!(var.name, "x");
             }
-        }
+            _ => panic!("Expected variable expression"),
+        },
         _ => panic!("Expected expression statement"),
     }
 }
@@ -129,38 +111,34 @@ fn test_parse_binary_expressions() {
         ("1 > 2;", BinaryOperator::Greater),
         ("1 >= 2;", BinaryOperator::GreaterEqual),
     ];
-    
+
     for (input, expected_op) in test_cases {
         let mut lexer = Lexer::new(input);
         let tokens = lexer.tokenize().unwrap();
         let mut parser = Parser::new(tokens);
         let statements = parser.parse().unwrap();
-        
+
         match &statements[0] {
             Stmt::Expression(expr_stmt) => {
                 match &expr_stmt.expr {
                     Expr::Binary(binary) => {
                         assert_eq!(binary.operator, expected_op);
-                        
+
                         // Check left operand
                         match &*binary.left {
-                            Expr::Literal(literal) => {
-                                match &literal.value {
-                                    LiteralValue::Number(n) => assert_eq!(*n, 1.0),
-                                    _ => panic!("Expected number literal"),
-                                }
-                            }
+                            Expr::Literal(literal) => match &literal.value {
+                                LiteralValue::Number(n) => assert_eq!(*n, 1.0),
+                                _ => panic!("Expected number literal"),
+                            },
                             _ => panic!("Expected literal expression"),
                         }
-                        
+
                         // Check right operand
                         match &*binary.right {
-                            Expr::Literal(literal) => {
-                                match &literal.value {
-                                    LiteralValue::Number(n) => assert_eq!(*n, 2.0),
-                                    _ => panic!("Expected number literal"),
-                                }
-                            }
+                            Expr::Literal(literal) => match &literal.value {
+                                LiteralValue::Number(n) => assert_eq!(*n, 2.0),
+                                _ => panic!("Expected number literal"),
+                            },
                             _ => panic!("Expected literal expression"),
                         }
                     }
@@ -180,44 +158,38 @@ fn test_parse_unary_expressions() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
-        Stmt::Expression(expr_stmt) => {
-            match &expr_stmt.expr {
-                Expr::Unary(unary) => {
-                    assert_eq!(unary.operator, UnaryOperator::Minus);
-                    match &*unary.operand {
-                        Expr::Literal(literal) => {
-                            match &literal.value {
-                                LiteralValue::Number(n) => assert_eq!(*n, 42.0),
-                                _ => panic!("Expected number literal"),
-                            }
-                        }
-                        _ => panic!("Expected literal expression"),
-                    }
+        Stmt::Expression(expr_stmt) => match &expr_stmt.expr {
+            Expr::Unary(unary) => {
+                assert_eq!(unary.operator, UnaryOperator::Minus);
+                match &*unary.operand {
+                    Expr::Literal(literal) => match &literal.value {
+                        LiteralValue::Number(n) => assert_eq!(*n, 42.0),
+                        _ => panic!("Expected number literal"),
+                    },
+                    _ => panic!("Expected literal expression"),
                 }
-                _ => panic!("Expected unary expression"),
             }
-        }
+            _ => panic!("Expected unary expression"),
+        },
         _ => panic!("Expected expression statement"),
     }
-    
+
     // Logical NOT
     let input = "!true;";
     let mut lexer = Lexer::new(input);
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
-        Stmt::Expression(expr_stmt) => {
-            match &expr_stmt.expr {
-                Expr::Unary(unary) => {
-                    assert_eq!(unary.operator, UnaryOperator::Not);
-                }
-                _ => panic!("Expected unary expression"),
+        Stmt::Expression(expr_stmt) => match &expr_stmt.expr {
+            Expr::Unary(unary) => {
+                assert_eq!(unary.operator, UnaryOperator::Not);
             }
-        }
+            _ => panic!("Expected unary expression"),
+        },
         _ => panic!("Expected expression statement"),
     }
 }
@@ -229,34 +201,30 @@ fn test_parse_logical_expressions() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
-        Stmt::Expression(expr_stmt) => {
-            match &expr_stmt.expr {
-                Expr::Logical(logical) => {
-                    assert_eq!(logical.operator, LogicalOperator::And);
-                }
-                _ => panic!("Expected logical expression"),
+        Stmt::Expression(expr_stmt) => match &expr_stmt.expr {
+            Expr::Logical(logical) => {
+                assert_eq!(logical.operator, LogicalOperator::And);
             }
-        }
+            _ => panic!("Expected logical expression"),
+        },
         _ => panic!("Expected expression statement"),
     }
-    
+
     let input = "true || false;";
     let mut lexer = Lexer::new(input);
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
-        Stmt::Expression(expr_stmt) => {
-            match &expr_stmt.expr {
-                Expr::Logical(logical) => {
-                    assert_eq!(logical.operator, LogicalOperator::Or);
-                }
-                _ => panic!("Expected logical expression"),
+        Stmt::Expression(expr_stmt) => match &expr_stmt.expr {
+            Expr::Logical(logical) => {
+                assert_eq!(logical.operator, LogicalOperator::Or);
             }
-        }
+            _ => panic!("Expected logical expression"),
+        },
         _ => panic!("Expected expression statement"),
     }
 }
@@ -268,18 +236,16 @@ fn test_parse_let_statement() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     assert_eq!(statements.len(), 1);
     match &statements[0] {
         Stmt::Let(let_stmt) => {
             assert_eq!(let_stmt.name, "x");
             match &let_stmt.initializer {
-                Expr::Literal(literal) => {
-                    match &literal.value {
-                        LiteralValue::Number(n) => assert_eq!(*n, 42.0),
-                        _ => panic!("Expected number literal"),
-                    }
-                }
+                Expr::Literal(literal) => match &literal.value {
+                    LiteralValue::Number(n) => assert_eq!(*n, 42.0),
+                    _ => panic!("Expected number literal"),
+                },
                 _ => panic!("Expected literal expression"),
             }
         }
@@ -298,7 +264,7 @@ fn test_parse_if_statement() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
         Stmt::If(if_stmt) => {
             // Check condition
@@ -308,19 +274,19 @@ fn test_parse_if_statement() {
                 }
                 _ => panic!("Expected binary expression"),
             }
-            
+
             // Check then branch
             match &*if_stmt.then_branch {
                 Stmt::Block(_) => (),
                 _ => panic!("Expected block statement"),
             }
-            
+
             // No else branch
             assert!(if_stmt.else_branch.is_none());
         }
         _ => panic!("Expected if statement"),
     }
-    
+
     // Test if-else
     let input = r#"
     if (x > 5) {
@@ -333,7 +299,7 @@ fn test_parse_if_statement() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
         Stmt::If(if_stmt) => {
             assert!(if_stmt.else_branch.is_some());
@@ -353,7 +319,7 @@ fn test_parse_while_statement() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
         Stmt::While(while_stmt) => {
             // Check condition
@@ -363,7 +329,7 @@ fn test_parse_while_statement() {
                 }
                 _ => panic!("Expected binary expression"),
             }
-            
+
             // Check body
             match &*while_stmt.body {
                 Stmt::Block(_) => (),
@@ -385,14 +351,14 @@ fn test_parse_function_statement() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
         Stmt::Function(fn_stmt) => {
             assert_eq!(fn_stmt.name, "add");
             assert_eq!(fn_stmt.params.len(), 2);
             assert_eq!(fn_stmt.params[0], "a");
             assert_eq!(fn_stmt.params[1], "b");
-            
+
             match &*fn_stmt.body {
                 Stmt::Block(_) => (),
                 _ => panic!("Expected block statement"),
@@ -410,30 +376,28 @@ fn test_parse_return_statement() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
         Stmt::Return(return_stmt) => {
             assert!(return_stmt.value.is_some());
             match return_stmt.value.as_ref().unwrap() {
-                Expr::Literal(literal) => {
-                    match &literal.value {
-                        LiteralValue::Number(n) => assert_eq!(*n, 42.0),
-                        _ => panic!("Expected number literal"),
-                    }
-                }
+                Expr::Literal(literal) => match &literal.value {
+                    LiteralValue::Number(n) => assert_eq!(*n, 42.0),
+                    _ => panic!("Expected number literal"),
+                },
                 _ => panic!("Expected literal expression"),
             }
         }
         _ => panic!("Expected return statement"),
     }
-    
+
     // Return without value
     let input = "return;";
     let mut lexer = Lexer::new(input);
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
         Stmt::Return(return_stmt) => {
             assert!(return_stmt.value.is_none());
@@ -449,19 +413,15 @@ fn test_parse_print_statement() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
-        Stmt::Print(print_stmt) => {
-            match &print_stmt.expr {
-                Expr::Literal(literal) => {
-                    match &literal.value {
-                        LiteralValue::String(s) => assert_eq!(s, "Hello, World!"),
-                        _ => panic!("Expected string literal"),
-                    }
-                }
-                _ => panic!("Expected literal expression"),
-            }
-        }
+        Stmt::Print(print_stmt) => match &print_stmt.expr {
+            Expr::Literal(literal) => match &literal.value {
+                LiteralValue::String(s) => assert_eq!(s, "Hello, World!"),
+                _ => panic!("Expected string literal"),
+            },
+            _ => panic!("Expected literal expression"),
+        },
         _ => panic!("Expected print statement"),
     }
 }
@@ -479,11 +439,11 @@ fn test_parse_block_statement() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
         Stmt::Block(block_stmt) => {
             assert_eq!(block_stmt.statements.len(), 3);
-            
+
             // Check first statement (let x = 42;)
             match &block_stmt.statements[0] {
                 Stmt::Let(let_stmt) => {
@@ -491,7 +451,7 @@ fn test_parse_block_statement() {
                 }
                 _ => panic!("Expected let statement"),
             }
-            
+
             // Check second statement (let y = 13;)
             match &block_stmt.statements[1] {
                 Stmt::Let(let_stmt) => {
@@ -499,17 +459,15 @@ fn test_parse_block_statement() {
                 }
                 _ => panic!("Expected let statement"),
             }
-            
+
             // Check third statement (x + y;)
             match &block_stmt.statements[2] {
-                Stmt::Expression(expr_stmt) => {
-                    match &expr_stmt.expr {
-                        Expr::Binary(binary) => {
-                            assert_eq!(binary.operator, BinaryOperator::Add);
-                        }
-                        _ => panic!("Expected binary expression"),
+                Stmt::Expression(expr_stmt) => match &expr_stmt.expr {
+                    Expr::Binary(binary) => {
+                        assert_eq!(binary.operator, BinaryOperator::Add);
                     }
-                }
+                    _ => panic!("Expected binary expression"),
+                },
                 _ => panic!("Expected expression statement"),
             }
         }
@@ -524,7 +482,7 @@ fn test_parse_call_expression() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
         Stmt::Expression(expr_stmt) => {
             match &expr_stmt.expr {
@@ -536,27 +494,23 @@ fn test_parse_call_expression() {
                         }
                         _ => panic!("Expected variable expression"),
                     }
-                    
+
                     // Check arguments
                     assert_eq!(call.args.len(), 2);
-                    
+
                     match &call.args[0] {
-                        Expr::Literal(literal) => {
-                            match &literal.value {
-                                LiteralValue::Number(n) => assert_eq!(*n, 1.0),
-                                _ => panic!("Expected number literal"),
-                            }
-                        }
+                        Expr::Literal(literal) => match &literal.value {
+                            LiteralValue::Number(n) => assert_eq!(*n, 1.0),
+                            _ => panic!("Expected number literal"),
+                        },
                         _ => panic!("Expected literal expression"),
                     }
-                    
+
                     match &call.args[1] {
-                        Expr::Literal(literal) => {
-                            match &literal.value {
-                                LiteralValue::Number(n) => assert_eq!(*n, 2.0),
-                                _ => panic!("Expected number literal"),
-                            }
-                        }
+                        Expr::Literal(literal) => match &literal.value {
+                            LiteralValue::Number(n) => assert_eq!(*n, 2.0),
+                            _ => panic!("Expected number literal"),
+                        },
                         _ => panic!("Expected literal expression"),
                     }
                 }
@@ -575,24 +529,22 @@ fn test_parse_precedence() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
         Stmt::Expression(expr_stmt) => {
             match &expr_stmt.expr {
                 Expr::Binary(add_binary) => {
                     assert_eq!(add_binary.operator, BinaryOperator::Add);
-                    
+
                     // Left side should be 2
                     match &*add_binary.left {
-                        Expr::Literal(literal) => {
-                            match &literal.value {
-                                LiteralValue::Number(n) => assert_eq!(*n, 2.0),
-                                _ => panic!("Expected number literal"),
-                            }
-                        }
+                        Expr::Literal(literal) => match &literal.value {
+                            LiteralValue::Number(n) => assert_eq!(*n, 2.0),
+                            _ => panic!("Expected number literal"),
+                        },
                         _ => panic!("Expected literal expression"),
                     }
-                    
+
                     // Right side should be (3 * 4)
                     match &*add_binary.right {
                         Expr::Binary(mul_binary) => {
@@ -615,13 +567,13 @@ fn test_parse_parenthesized_expressions() {
     let tokens = lexer.tokenize().unwrap();
     let mut parser = Parser::new(tokens);
     let statements = parser.parse().unwrap();
-    
+
     match &statements[0] {
         Stmt::Expression(expr_stmt) => {
             match &expr_stmt.expr {
                 Expr::Binary(mul_binary) => {
                     assert_eq!(mul_binary.operator, BinaryOperator::Multiply);
-                    
+
                     // Left side should be (2 + 3)
                     match &*mul_binary.left {
                         Expr::Binary(add_binary) => {
@@ -629,15 +581,13 @@ fn test_parse_parenthesized_expressions() {
                         }
                         _ => panic!("Expected binary expression"),
                     }
-                    
+
                     // Right side should be 4
                     match &*mul_binary.right {
-                        Expr::Literal(literal) => {
-                            match &literal.value {
-                                LiteralValue::Number(n) => assert_eq!(*n, 4.0),
-                                _ => panic!("Expected number literal"),
-                            }
-                        }
+                        Expr::Literal(literal) => match &literal.value {
+                            LiteralValue::Number(n) => assert_eq!(*n, 4.0),
+                            _ => panic!("Expected number literal"),
+                        },
                         _ => panic!("Expected literal expression"),
                     }
                 }

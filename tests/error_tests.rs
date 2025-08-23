@@ -212,7 +212,7 @@ fn test_error_equality() {
     let error1 = JingError::runtime_error("Test error");
     let error2 = JingError::runtime_error("Test error");
     let error3 = JingError::runtime_error("Different error");
-    
+
     assert_eq!(error1, error2);
     assert_ne!(error1, error3);
 }

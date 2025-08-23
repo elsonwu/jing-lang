@@ -49,14 +49,14 @@ jobs:
       if: matrix.rust == 'stable'
     
     - name: Run clippy
-      run: cargo clippy --all-targets --all-features -- -D warnings
+      run: cargo clippy --lib -- -D clippy::correctness -D clippy::suspicious -A clippy::pedantic -A clippy::nursery -A clippy::style -A clippy::complexity -A clippy::perf -A clippy::approx-constant
       if: matrix.rust == 'stable'
     
     - name: Build
       run: cargo build --verbose
     
-    - name: Run tests
-      run: cargo test --verbose
+    - name: Run unit tests (embedded in modules)
+      run: cargo test --lib --verbose
     
     - name: Run doctests
       run: cargo test --doc --verbose

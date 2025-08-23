@@ -193,7 +193,7 @@ impl Lexer {
             if self.peek() == '\n' {
                 self.line += 1;
             }
-            
+
             let c = self.advance();
             if c == '\\' && !self.is_at_end() {
                 // Handle escape sequences
@@ -341,14 +341,14 @@ mod tests {
     fn test_basic_tokens() {
         let mut lexer = Lexer::new("let x = 42;");
         let tokens = lexer.tokenize().unwrap();
-        
+
         assert_eq!(tokens.len(), 6); // let, x, =, 42, ;, EOF
-        
+
         match &tokens[0].token_type {
             TokenType::Let => (),
             _ => panic!("Expected Let token"),
         }
-        
+
         match &tokens[1].token_type {
             TokenType::Identifier(name) => assert_eq!(name, "x"),
             _ => panic!("Expected Identifier token"),
@@ -359,7 +359,7 @@ mod tests {
     fn test_string_literal() {
         let mut lexer = Lexer::new("\"Hello, World!\"");
         let tokens = lexer.tokenize().unwrap();
-        
+
         match &tokens[0].token_type {
             TokenType::String(s) => assert_eq!(s, "Hello, World!"),
             _ => panic!("Expected String token"),
@@ -370,7 +370,7 @@ mod tests {
     fn test_number_literal() {
         let mut lexer = Lexer::new("123.45");
         let tokens = lexer.tokenize().unwrap();
-        
+
         match &tokens[0].token_type {
             TokenType::Number(n) => assert_eq!(*n, 123.45),
             _ => panic!("Expected Number token"),

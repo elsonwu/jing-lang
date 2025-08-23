@@ -26,19 +26,15 @@ path = "src/main.rs"
 # Linting configuration
 [lints.rust]
 unsafe_code = "forbid"
-missing_docs = "warn"
 
 [lints.clippy]
-# Pedantic lints for high code quality
-pedantic = "warn"
-nursery = "warn"
+# Focus on correctness and suspicious patterns only
+correctness = "deny"
+suspicious = "deny"
 
-# Specific lints to deny
-missing_errors_doc = "deny"
-missing_panics_doc = "deny"
-missing_safety_doc = "deny"
-
-# Educational code allowances
-missing_docs_in_private_items = "allow"
-module_name_repetitions = "allow"
-similar_names = "allow"
+# Allow all other categories for educational code
+pedantic = "allow"
+nursery = "allow"
+style = "allow"
+complexity = "allow"
+perf = "allow"

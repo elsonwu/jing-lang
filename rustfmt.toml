@@ -1,44 +1,25 @@
 # Rust formatting configuration
 # https://rust-lang.github.io/rustfmt/
 
-# Stable options
+# Stable options only (compatible with stable Rust)
 edition = "2021"
 hard_tabs = false
 tab_spaces = 4
 newline_style = "Unix"
 use_small_heuristics = "Default"
 
-# Style options
-indent_style = "Block"
+# Basic style options (stable)
 use_field_init_shorthand = true
 force_explicit_abi = true
-format_code_in_doc_comments = true
-format_macro_matchers = true
-format_strings = false
-imports_indent = "Block"
-imports_layout = "Mixed"
-group_imports = "StdExternalCrate"
 merge_derives = true
 reorder_imports = true
 reorder_modules = true
-reorder_impl_items = false
 
 # Length limits
 max_width = 100
-comment_width = 80
-wrap_comments = false
 
-# Function formatting
-fn_args_layout = "Tall"
-brace_style = "SameLineWhere"
-control_brace_style = "AlwaysSameLine"
-trailing_comma = "Vertical"
-match_arm_blocks = true
-force_multiline_blocks = false
+# Function formatting  
+fn_params_layout = "Tall"
 
 # Misc
 remove_nested_parens = true
-normalize_comments = false
-normalize_doc_attributes = false
-license_template_path = ""
-format_generated_files = true

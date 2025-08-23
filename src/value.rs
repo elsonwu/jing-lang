@@ -1,6 +1,6 @@
-use std::fmt;
-use std::collections::HashMap;
 use crate::error::{JingError, JingResult};
+use std::collections::HashMap;
+use std::fmt;
 
 /// Values in Jing are dynamically typed
 #[derive(Debug, Clone, PartialEq)]
@@ -63,7 +63,8 @@ impl Value {
     }
 
     /// Convert value to string representation
-    pub fn to_string(&self) -> String {
+    /// Convert value to string representation for concatenation
+    pub fn as_string(&self) -> String {
         match self {
             Value::String(s) => s.clone(),
             other => other.to_string(),
@@ -74,10 +75,9 @@ impl Value {
     pub fn to_number(&self) -> JingResult<f64> {
         match self {
             Value::Number(n) => Ok(*n),
-            Value::String(s) => {
-                s.parse::<f64>()
-                    .map_err(|_| JingError::type_error(format!("Cannot convert '{}' to number", s)))
-            }
+            Value::String(s) => s
+                .parse::<f64>()
+                .map_err(|_| JingError::type_error(format!("Cannot convert '{}' to number", s))),
             _ => Err(JingError::type_error(format!(
                 "Cannot convert {} to number",
                 self.type_name()

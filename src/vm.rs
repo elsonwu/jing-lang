@@ -1,6 +1,6 @@
 use crate::compiler::{Chunk, OpCode};
 use crate::error::{JingError, JingResult};
-use crate::value::{Value, Environment};
+use crate::value::{Environment, Value};
 
 /// Call frame for function calls
 #[derive(Debug, Clone)]
@@ -14,8 +14,8 @@ struct CallFrame {
 /// Virtual Machine for executing Jing bytecode
 pub struct VM {
     chunk: Chunk,
-    ip: usize,           // Instruction pointer
-    stack: Vec<Value>,   // Value stack
+    ip: usize,         // Instruction pointer
+    stack: Vec<Value>, // Value stack
     globals: Environment,
     call_stack: Vec<CallFrame>,
 }
@@ -194,13 +194,13 @@ impl VM {
                     if let Some(frame) = self.call_stack.pop() {
                         // Restore the previous call frame
                         let return_value = self.pop()?;
-                        
+
                         // Remove the function's local variables from the stack
                         self.stack.truncate(frame.stack_base);
-                        
+
                         // Push the return value
                         self.push(return_value);
-                        
+
                         // Return to the caller
                         self.ip = frame.return_address;
                     } else {
@@ -225,9 +225,13 @@ impl VM {
 
     fn call_function(&mut self, arity: usize) -> JingResult<()> {
         let function = self.peek_at(arity)?;
-        
+
         match function {
-            Value::Function { name, arity: expected_arity, chunk_start } => {
+            Value::Function {
+                name,
+                arity: expected_arity,
+                chunk_start,
+            } => {
                 if arity != expected_arity {
                     return Err(JingError::runtime_error(format!(
                         "Function '{}' expects {} arguments, got {}",
@@ -241,20 +245,18 @@ impl VM {
                     return_address: self.ip,
                     stack_base: self.stack.len() - arity - 1, // -1 for the function itself
                 };
-                
+
                 self.call_stack.push(frame);
-                
+
                 // Jump to the function's code
                 self.ip = chunk_start;
-                
+
                 // Remove the function from the stack, leaving arguments
                 let function_index = self.stack.len() - arity - 1;
                 self.stack.remove(function_index);
             }
             _ => {
-                return Err(JingError::runtime_error(
-                    "Can only call functions"
-                ));
+                return Err(JingError::runtime_error("Can only call functions"));
             }
         }
 
@@ -268,16 +270,17 @@ impl VM {
 
     /// Pop a value from the stack
     fn pop(&mut self) -> JingResult<Value> {
-        self.stack.pop().ok_or_else(|| {
-            JingError::runtime_error("Stack underflow")
-        })
+        self.stack
+            .pop()
+            .ok_or_else(|| JingError::runtime_error("Stack underflow"))
     }
 
     /// Peek at the top of the stack without popping
     fn peek(&self) -> JingResult<Value> {
-        self.stack.last().cloned().ok_or_else(|| {
-            JingError::runtime_error("Empty stack")
-        })
+        self.stack
+            .last()
+            .cloned()
+            .ok_or_else(|| JingError::runtime_error("Empty stack"))
     }
 
     /// Peek at a value at a given distance from the top of the stack
@@ -285,7 +288,7 @@ impl VM {
         if distance >= self.stack.len() {
             return Err(JingError::runtime_error("Stack index out of bounds"));
         }
-        
+
         let index = self.stack.len() - 1 - distance;
         Ok(self.stack[index].clone())
     }
@@ -311,26 +314,24 @@ pub struct REPL {
 
 impl REPL {
     pub fn new() -> Self {
-        REPL {
-            vm: VM::new(),
-        }
+        REPL { vm: VM::new() }
     }
 
     /// Evaluate a single line of Jing code
     pub fn eval(&mut self, source: &str) -> JingResult<()> {
+        use crate::compiler::Compiler;
         use crate::lexer::Lexer;
         use crate::parser::Parser;
-        use crate::compiler::Compiler;
 
         let mut lexer = Lexer::new(source);
         let tokens = lexer.tokenize()?;
-        
+
         let mut parser = Parser::new(tokens);
         let statements = parser.parse()?;
-        
+
         let mut compiler = Compiler::new();
         let chunk = compiler.compile(statements)?;
-        
+
         self.vm.interpret(chunk)
     }
 
@@ -350,11 +351,11 @@ impl REPL {
             match io::stdin().read_line(&mut input) {
                 Ok(_) => {
                     let input = input.trim();
-                    
+
                     if input.is_empty() {
                         continue;
                     }
-                    
+
                     if input == "exit" || input == "quit" {
                         break;
                     }
@@ -381,30 +382,30 @@ impl REPL {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::compiler::Compiler;
     use crate::lexer::Lexer;
     use crate::parser::Parser;
-    use crate::compiler::Compiler;
 
     fn run_code(source: &str) -> JingResult<VM> {
         let mut lexer = Lexer::new(source);
         let tokens = lexer.tokenize()?;
-        
+
         let mut parser = Parser::new(tokens);
         let statements = parser.parse()?;
-        
+
         let mut compiler = Compiler::new();
         let chunk = compiler.compile(statements)?;
-        
+
         let mut vm = VM::new();
         vm.interpret(chunk)?;
-        
+
         Ok(vm)
     }
 
     #[test]
     fn test_simple_arithmetic() {
         let vm = run_code("let result = 10 + 5;").unwrap();
-        
+
         let result = vm.globals.get("result").unwrap();
         match result {
             Value::Number(n) => assert_eq!(n, 15.0),
@@ -414,11 +415,14 @@ mod tests {
 
     #[test]
     fn test_variables() {
-        let vm = run_code(r#"
+        let vm = run_code(
+            r"
             let x = 42;
             let y = x + 8;
-        "#).unwrap();
-        
+        ",
+        )
+        .unwrap();
+
         let y = vm.globals.get("y").unwrap();
         match y {
             Value::Number(n) => assert_eq!(n, 50.0),
@@ -428,10 +432,13 @@ mod tests {
 
     #[test]
     fn test_string_concatenation() {
-        let vm = run_code(r#"
+        let vm = run_code(
+            r#"
             let greeting = "Hello, " + "World!";
-        "#).unwrap();
-        
+        "#,
+        )
+        .unwrap();
+
         let greeting = vm.globals.get("greeting").unwrap();
         match greeting {
             Value::String(s) => assert_eq!(s, "Hello, World!"),

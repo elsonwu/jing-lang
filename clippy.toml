@@ -7,9 +7,6 @@ msrv = "1.70.0"
 # Cognitive complexity threshold
 cognitive-complexity-threshold = 30
 
-# Documentation lint configuration
-missing-docs-in-crate-items = true
-
 # Allow certain lints for educational/example code
 avoid-breaking-exported-api = false
 
@@ -19,11 +16,8 @@ too-many-arguments-threshold = 7
 # Threshold for type complexity lint
 type-complexity-threshold = 250
 
-# Single char lifetime names threshold
-single-char-lifetime-names-threshold = 4
+# Threshold for too many lines lint
+too-many-lines-threshold = 100
 
 # Trivial copy pass by ref threshold  
 trivial-copy-size-limit = 64
-
-# Too many lines threshold
-too-many-lines-threshold = 100

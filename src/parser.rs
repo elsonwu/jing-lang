@@ -162,7 +162,7 @@ impl Parser {
             if self.match_token(&TokenType::Newline) {
                 continue;
             }
-            
+
             statements.push(self.declaration()?);
         }
 
@@ -183,22 +183,25 @@ impl Parser {
     /// Parse a let declaration
     fn let_declaration(&mut self) -> JingResult<Stmt> {
         let name = self.consume_identifier("Expected variable name")?;
-        
+
         self.consume(&TokenType::Equal, "Expected '=' after variable name")?;
-        
+
         let initializer = self.expression()?;
-        
-        self.consume(&TokenType::Semicolon, "Expected ';' after variable declaration")?;
-        
+
+        self.consume(
+            &TokenType::Semicolon,
+            "Expected ';' after variable declaration",
+        )?;
+
         Ok(Stmt::Let(LetStmt { name, initializer }))
     }
 
     /// Parse a function declaration
     fn function_declaration(&mut self) -> JingResult<Stmt> {
         let name = self.consume_identifier("Expected function name")?;
-        
+
         self.consume(&TokenType::LeftParen, "Expected '(' after function name")?;
-        
+
         let mut params = Vec::new();
         if !self.check(&TokenType::RightParen) {
             loop {
@@ -208,11 +211,11 @@ impl Parser {
                 }
             }
         }
-        
+
         self.consume(&TokenType::RightParen, "Expected ')' after parameters")?;
-        
+
         let body = Box::new(self.block_statement()?);
-        
+
         Ok(Stmt::Function(FunctionStmt { name, params, body }))
     }
 
@@ -237,13 +240,13 @@ impl Parser {
     fn if_statement(&mut self) -> JingResult<Stmt> {
         let condition = self.expression()?;
         let then_branch = Box::new(self.statement()?);
-        
+
         let else_branch = if self.match_token(&TokenType::Else) {
             Some(Box::new(self.statement()?))
         } else {
             None
         };
-        
+
         Ok(Stmt::If(IfStmt {
             condition,
             then_branch,
@@ -255,7 +258,7 @@ impl Parser {
     fn while_statement(&mut self) -> JingResult<Stmt> {
         let condition = self.expression()?;
         let body = Box::new(self.statement()?);
-        
+
         Ok(Stmt::While(WhileStmt { condition, body }))
     }
 
@@ -266,9 +269,9 @@ impl Parser {
         } else {
             Some(self.expression()?)
         };
-        
+
         self.consume(&TokenType::Semicolon, "Expected ';' after return value")?;
-        
+
         Ok(Stmt::Return(ReturnStmt { value }))
     }
 
@@ -297,7 +300,7 @@ impl Parser {
     /// Parse an expression statement
     fn expression_statement(&mut self) -> JingResult<Stmt> {
         let expr = self.expression()?;
-        
+
         // Check for print function calls and convert to print statements
         if let Expr::Call(call_expr) = &expr {
             if let Expr::Variable(var) = call_expr.callee.as_ref() {
@@ -309,7 +312,7 @@ impl Parser {
                 }
             }
         }
-        
+
         self.consume(&TokenType::Semicolon, "Expected ';' after expression")?;
         Ok(Stmt::Expression(ExpressionStmt { expr }))
     }
@@ -434,7 +437,7 @@ impl Parser {
 
         while self.match_token(&TokenType::LeftParen) {
             let mut args = Vec::new();
-            
+
             if !self.check(&TokenType::RightParen) {
                 loop {
                     args.push(self.expression()?);
@@ -443,9 +446,9 @@ impl Parser {
                     }
                 }
             }
-            
+
             self.consume(&TokenType::RightParen, "Expected ')' after arguments")?;
-            
+
             expr = Expr::Call(CallExpr {
                 callee: Box::new(expr),
                 args,
@@ -503,7 +506,10 @@ impl Parser {
             return Ok(expr);
         }
 
-        Err(JingError::parse_error("Expected expression", self.current_line()))
+        Err(JingError::parse_error(
+            "Expected expression",
+            self.current_line(),
+        ))
     }
 
     // Helper methods for operator matching

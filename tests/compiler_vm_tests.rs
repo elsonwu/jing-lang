@@ -9,7 +9,7 @@ fn test_compile_literals() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     // Should have opcodes for loading constant and returning
     assert!(chunk.code.len() > 0);
 }
@@ -23,10 +23,10 @@ fn test_compile_arithmetic() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     // Should compile successfully
     assert!(chunk.code.len() > 0);
-    
+
     // Test execution
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
@@ -46,7 +46,7 @@ fn test_compile_variables() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::Number(30.0));
@@ -61,7 +61,7 @@ fn test_compile_strings() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::String("Hello, World!".to_string()));
@@ -76,7 +76,7 @@ fn test_compile_booleans() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::Bool(true));
@@ -92,7 +92,7 @@ fn test_compile_comparisons() {
         ("5 == 5;", Value::Bool(true)),
         ("5 != 3;", Value::Bool(true)),
     ];
-    
+
     for (input, expected) in test_cases {
         let mut lexer = Lexer::new(input);
         let tokens = lexer.tokenize().unwrap();
@@ -100,7 +100,7 @@ fn test_compile_comparisons() {
         let statements = parser.parse().unwrap();
         let mut compiler = Compiler::new();
         let chunk = compiler.compile(&statements).unwrap();
-        
+
         let mut vm = VM::new();
         let result = vm.run(&chunk).unwrap();
         assert_eq!(result, expected, "Failed for input: {}", input);
@@ -123,7 +123,7 @@ fn test_compile_if_statement() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::String("greater".to_string()));
@@ -146,7 +146,7 @@ fn test_compile_while_loop() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::Number(3.0)); // 0 + 1 + 2 = 3
@@ -166,7 +166,7 @@ fn test_compile_function() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::Number(8.0));
@@ -181,10 +181,10 @@ fn test_compile_print() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     // Should compile successfully
     assert!(chunk.code.len() > 0);
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     // Print statements return nil
@@ -209,7 +209,7 @@ fn test_compile_nested_scopes() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::Number(3.0)); // Should access innermost x
@@ -229,7 +229,7 @@ fn test_compile_complex_expressions() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::Number(14.0)); // (2+3)*4 - 2*3 = 20 - 6 = 14
@@ -244,7 +244,7 @@ fn test_vm_stack_operations() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     // Should return the last expression
@@ -261,7 +261,7 @@ fn test_vm_error_handling() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk);
     assert!(result.is_err());
@@ -277,7 +277,7 @@ fn test_vm_type_checking() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk);
     assert!(result.is_err());
@@ -302,7 +302,7 @@ fn test_vm_function_calls() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::Number(49.0));
@@ -326,7 +326,7 @@ fn test_vm_recursive_functions() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::Number(8.0)); // fibonacci(6) = 8
@@ -350,7 +350,7 @@ fn test_vm_variable_shadowing() {
     let statements = parser.parse().unwrap();
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(&statements).unwrap();
-    
+
     let mut vm = VM::new();
     let result = vm.run(&chunk).unwrap();
     assert_eq!(result, Value::String("inner".to_string()));
@@ -366,7 +366,7 @@ fn test_compile_all_operators() {
         ("17 % 5;", Value::Number(2.0)),
         ("-5;", Value::Number(-5.0)),
     ];
-    
+
     for (input, expected) in test_cases {
         let mut lexer = Lexer::new(input);
         let tokens = lexer.tokenize().unwrap();
@@ -374,7 +374,7 @@ fn test_compile_all_operators() {
         let statements = parser.parse().unwrap();
         let mut compiler = Compiler::new();
         let chunk = compiler.compile(&statements).unwrap();
-        
+
         let mut vm = VM::new();
         let result = vm.run(&chunk).unwrap();
         assert_eq!(result, expected, "Failed for input: {}", input);
@@ -393,7 +393,7 @@ fn test_compile_logical_operators() {
         ("!nil;", Value::Bool(true)),
         ("!42;", Value::Bool(false)),
     ];
-    
+
     for (input, expected) in test_cases {
         let mut lexer = Lexer::new(input);
         let tokens = lexer.tokenize().unwrap();
@@ -401,7 +401,7 @@ fn test_compile_logical_operators() {
         let statements = parser.parse().unwrap();
         let mut compiler = Compiler::new();
         let chunk = compiler.compile(&statements).unwrap();
-        
+
         let mut vm = VM::new();
         let result = vm.run(&chunk).unwrap();
         assert_eq!(result, expected, "Failed for input: {}", input);

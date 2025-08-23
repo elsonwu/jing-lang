@@ -31,8 +31,9 @@ fn main() {
 }
 
 fn run_file(filename: &str) -> JingResult<()> {
-    let source = fs::read_to_string(filename)
-        .map_err(|err| JingError::io_error(format!("Could not read file '{}': {}", filename, err)))?;
+    let source = fs::read_to_string(filename).map_err(|err| {
+        JingError::io_error(format!("Could not read file '{}': {}", filename, err))
+    })?;
 
     let mut lexer = Lexer::new(&source);
     let tokens = lexer.tokenize()?;
