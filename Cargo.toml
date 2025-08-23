@@ -3,16 +3,4 @@ name = "jilang"
 version = "0.1.0"
 edition = "2024"
 
-[lib]
-name = "jilang"
-path = "src/lib.rs"
-
-[[bin]]
-name = "jilang"
-path = "src/main.rs"
-
-[[bin]]
-name = "test_components"
-path = "src/test_components.rs"
-
 [dependencies]
