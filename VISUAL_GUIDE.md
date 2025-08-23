@@ -165,7 +165,7 @@ Bytecode:
 │ 0: LOAD("x")         // Load x onto stack                                │
 │ 1: CONSTANT(10)      // Load 10 onto stack                               │  
 │ 2: GREATER           // Compare: x > 10, result on stack                 │
-│ 3: JUMP_IF_FALSE(7)  // If false, jump to instruction 7 (else branch)   │
+│ 3: JUMP_IF_FALSE(7)  // If false, jump to instruction 7 (else branch)    │
 │ 4: CONSTANT("big")   // Then branch: load "big"                          │
 │ 5: PRINT             // Print "big"                                      │
 │ 6: JUMP(9)           // Jump past else branch                            │
@@ -188,7 +188,7 @@ Execution flow if x = 5:
 ```
 Function Definition Compilation:
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ Function "add" compiled to:                                              │
+│ Function "add" compiled to:                                             │
 │ 0: LOAD("a")         // Load parameter a                                │
 │ 1: LOAD("b")         // Load parameter b                                │  
 │ 2: ADD               // Add them                                        │
@@ -203,7 +203,7 @@ Function Call Compilation:
 │ 10: CONSTANT(10)     // Push first argument                             │
 │ 11: CONSTANT(20)     // Push second argument                            │
 │ 12: LOAD("add")      // Load function                                   │
-│ 13: CALL(2)          // Call with 2 arguments                          │
+│ 13: CALL(2)          // Call with 2 arguments                           │
 │ 14: STORE("result")  // Store return value                              │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -214,19 +214,19 @@ Call Stack during execution:
 │ Call Stack: []                                                          │
 │                                                                         │
 │ During function execution:                                              │
-│ Stack: [10, 20] (function removed, args remain)                        │  
-│ Call Stack: [CallFrame { return_addr: 14, stack_base: 0 }]             │
-│ IP jumps to function start (instruction 0)                             │
+│ Stack: [10, 20] (function removed, args remain)                         │  
+│ Call Stack: [CallFrame { return_addr: 14, stack_base: 0 }]              │
+│ IP jumps to function start (instruction 0)                              │
 │                                                                         │
 │ Function executes:                                                      │
-│ - Loads a (10) and b (20)                                              │
-│ - Adds them (30)                                                       │
-│ - Returns 30                                                           │
+│ - Loads a (10) and b (20)                                               │
+│ - Adds them (30)                                                        │
+│ - Returns 30                                                            │
 │                                                                         │
 │ After RETURN:                                                           │
-│ Stack: [30] (return value)                                             │
-│ Call Stack: [] (frame popped)                                          │
-│ IP returns to 14                                                       │
+│ Stack: [30] (return value)                                              │
+│ Call Stack: [] (frame popped)                                           │
+│ IP returns to 14                                                        │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -267,32 +267,32 @@ Jing VM Memory Layout:
 │                        VM Memory                                │
 ├─────────────────────────────────────────────────────────────────┤
 │ Constants Pool                                                  │
-│ ┌─────┬─────┬─────┬─────┐                                      │
-│ │ 42  │"hi" │true │ ... │                                      │  
-│ └─────┴─────┴─────┴─────┘                                      │
+│ ┌─────┬─────┬─────┬─────┐                                       │
+│ │ 42  │"hi" │true │ ... │                                       │  
+│ └─────┴─────┴─────┴─────┘                                       │
 ├─────────────────────────────────────────────────────────────────┤
 │ Bytecode Instructions                                           │
-│ ┌─────────────┬─────────────┬─────────────┐                    │
-│ │ CONSTANT(0) │  STORE("x") │    HALT     │                    │
-│ └─────────────┴─────────────┴─────────────┘                    │
+│ ┌─────────────┬─────────────┬─────────────┐                     │
+│ │ CONSTANT(0) │  STORE("x") │    HALT     │                     │
+│ └─────────────┴─────────────┴─────────────┘                     │
 ├─────────────────────────────────────────────────────────────────┤
-│ Value Stack (grows up)                                         │
-│ ┌─────────────┬─────────────┬─────────────┐                    │
-│ │    empty    │    empty    │    empty    │                    │
-│ └─────────────┴─────────────┴─────────────┘                    │
-│                      ▲                                         │
-│                 Stack Pointer                                  │
+│ Value Stack (grows up)                                          │
+│ ┌─────────────┬─────────────┬─────────────┐                     │
+│ │    empty    │    empty    │    empty    │                     │
+│ └─────────────┴─────────────┴─────────────┘                     │
+│                      ▲                                          │
+│                 Stack Pointer                                   │
 ├─────────────────────────────────────────────────────────────────┤
-│ Global Variables                                               │
-│ ┌─────────────────────┬──────────────────────────────────────┐   │
-│ │ "x" → Number(42)    │ "name" → String("Jing")          │   │
-│ │ "flag" → Bool(true) │ "add" → Function(...)              │   │
-│ └─────────────────────┴──────────────────────────────────────┘   │
+│ Global Variables                                                │
+│ ┌─────────────────────┬──────────────────────────────────────┐  │
+│ │ "x" → Number(42)    │ "name" → String("Jing")              │  │
+│ │ "flag" → Bool(true) │ "add" → Function(...)                │  │
+│ └─────────────────────┴──────────────────────────────────────┘  │
 ├─────────────────────────────────────────────────────────────────┤
-│ Call Stack (for function calls)                               │
+│ Call Stack (for function calls)                                 │
 │ ┌─────────────────────────────────────────────────────────────┐ │
-│ │ CallFrame { return_addr: 15, stack_base: 2 }               │ │
-│ │ CallFrame { return_addr: 8, stack_base: 0 }                │ │
+│ │ CallFrame { return_addr: 15, stack_base: 2 }                │ │
+│ │ CallFrame { return_addr: 8, stack_base: 0 }                 │ │
 │ └─────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 ```
