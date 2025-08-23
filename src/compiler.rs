@@ -121,12 +121,12 @@ impl Compiler {
     pub fn compile(&mut self, statements: Vec<Stmt>) -> JingResult<Chunk> {
         let mut statements = statements;
         let last_stmt = statements.pop();
-        
+
         // Compile all statements except the last
         for stmt in statements {
             self.compile_statement(stmt)?;
         }
-        
+
         // Compile the last statement, but don't pop its result if it's an expression or block
         if let Some(stmt) = last_stmt {
             match stmt {
@@ -139,12 +139,12 @@ impl Compiler {
                     self.begin_scope();
                     let mut statements = block_stmt.statements;
                     let last_stmt = statements.pop();
-                    
+
                     // Compile all statements except the last
                     for stmt in statements {
                         self.compile_statement(stmt)?;
                     }
-                    
+
                     // Compile the last statement, but don't pop its result if it's an expression
                     if let Some(stmt) = last_stmt {
                         match stmt {
@@ -202,12 +202,12 @@ impl Compiler {
                 self.begin_scope();
                 let mut statements = block_stmt.statements;
                 let last_stmt = statements.pop();
-                
+
                 // Compile all statements except the last
                 for stmt in statements {
                     self.compile_statement(stmt)?;
                 }
-                
+
                 // Compile the last statement, but don't pop its result if it's an expression
                 if let Some(stmt) = last_stmt {
                     match stmt {

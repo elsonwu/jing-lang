@@ -107,7 +107,7 @@ fn test_compile_comparisons() {
 
         let mut vm = VM::new();
         vm.interpret(chunk).unwrap();
-    let result = vm.get_result().unwrap();
+        let result = vm.get_result().unwrap();
         assert_eq!(result, expected, "Failed for input: {}", input);
     }
 }
@@ -392,7 +392,7 @@ fn test_compile_all_operators() {
 
         let mut vm = VM::new();
         vm.interpret(chunk).unwrap();
-    let result = vm.get_result().unwrap();
+        let result = vm.get_result().unwrap();
         assert_eq!(result, expected, "Failed for input: {}", input);
     }
 }
@@ -420,7 +420,7 @@ fn test_compile_logical_operators() {
 
         let mut vm = VM::new();
         vm.interpret(chunk).unwrap();
-    let result = vm.get_result().unwrap();
+        let result = vm.get_result().unwrap();
         assert_eq!(result, expected, "Failed for input: {}", input);
     }
 }

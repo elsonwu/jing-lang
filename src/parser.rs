@@ -335,7 +335,7 @@ impl Parser {
 
         if self.match_token(&TokenType::Equal) {
             let value = self.assignment()?;
-            
+
             if let Expr::Variable(var) = expr {
                 return Ok(Expr::Assign(AssignExpr {
                     name: var.name,

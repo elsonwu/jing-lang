@@ -72,7 +72,7 @@ impl VM {
                         self.push(function_value);
                     } else {
                         return Err(JingError::runtime_error(format!(
-                            "Undefined variable or function '{}'", 
+                            "Undefined variable or function '{}'",
                             name
                         )));
                     }
