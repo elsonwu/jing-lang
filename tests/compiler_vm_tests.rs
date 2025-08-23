@@ -1,0 +1,409 @@
+use jing::*;
+
+#[test]
+fn test_compile_literals() {
+    let input = "42;";
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    // Should have opcodes for loading constant and returning
+    assert!(chunk.code.len() > 0);
+}
+
+#[test]
+fn test_compile_arithmetic() {
+    let input = "2 + 3 * 4;";
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    // Should compile successfully
+    assert!(chunk.code.len() > 0);
+    
+    // Test execution
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::Number(14.0)); // 2 + (3 * 4) = 14
+}
+
+#[test]
+fn test_compile_variables() {
+    let input = r#"
+        let x = 10;
+        let y = 20;
+        x + y;
+    "#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::Number(30.0));
+}
+
+#[test]
+fn test_compile_strings() {
+    let input = r#""Hello, " + "World!";"#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::String("Hello, World!".to_string()));
+}
+
+#[test]
+fn test_compile_booleans() {
+    let input = "true && !false;";
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::Bool(true));
+}
+
+#[test]
+fn test_compile_comparisons() {
+    let test_cases = vec![
+        ("5 > 3;", Value::Bool(true)),
+        ("5 < 3;", Value::Bool(false)),
+        ("5 >= 5;", Value::Bool(true)),
+        ("5 <= 4;", Value::Bool(false)),
+        ("5 == 5;", Value::Bool(true)),
+        ("5 != 3;", Value::Bool(true)),
+    ];
+    
+    for (input, expected) in test_cases {
+        let mut lexer = Lexer::new(input);
+        let tokens = lexer.tokenize().unwrap();
+        let mut parser = Parser::new(tokens);
+        let statements = parser.parse().unwrap();
+        let mut compiler = Compiler::new();
+        let chunk = compiler.compile(&statements).unwrap();
+        
+        let mut vm = VM::new();
+        let result = vm.run(&chunk).unwrap();
+        assert_eq!(result, expected, "Failed for input: {}", input);
+    }
+}
+
+#[test]
+fn test_compile_if_statement() {
+    let input = r#"
+        let x = 10;
+        if (x > 5) {
+            "greater";
+        } else {
+            "lesser";
+        }
+    "#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::String("greater".to_string()));
+}
+
+#[test]
+fn test_compile_while_loop() {
+    let input = r#"
+        let i = 0;
+        let sum = 0;
+        while (i < 3) {
+            sum = sum + i;
+            i = i + 1;
+        }
+        sum;
+    "#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::Number(3.0)); // 0 + 1 + 2 = 3
+}
+
+#[test]
+fn test_compile_function() {
+    let input = r#"
+        fn add(a, b) {
+            return a + b;
+        }
+        add(5, 3);
+    "#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::Number(8.0));
+}
+
+#[test]
+fn test_compile_print() {
+    let input = r#"print("Hello, World!");"#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    // Should compile successfully
+    assert!(chunk.code.len() > 0);
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    // Print statements return nil
+    assert_eq!(result, Value::Nil);
+}
+
+#[test]
+fn test_compile_nested_scopes() {
+    let input = r#"
+        let x = 1;
+        {
+            let x = 2;
+            {
+                let x = 3;
+                x;
+            }
+        }
+    "#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::Number(3.0)); // Should access innermost x
+}
+
+#[test]
+fn test_compile_complex_expressions() {
+    let input = r#"
+        let a = 2;
+        let b = 3;
+        let c = 4;
+        (a + b) * c - a * b;
+    "#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::Number(14.0)); // (2+3)*4 - 2*3 = 20 - 6 = 14
+}
+
+#[test]
+fn test_vm_stack_operations() {
+    let input = "1; 2; 3;";
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    // Should return the last expression
+    assert_eq!(result, Value::Number(3.0));
+}
+
+#[test]
+fn test_vm_error_handling() {
+    // Division by zero
+    let input = "10 / 0;";
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_vm_type_checking() {
+    // Try to add incompatible types
+    let input = "true + 42;";
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_vm_function_calls() {
+    let input = r#"
+        fn multiply(x, y) {
+            return x * y;
+        }
+        
+        fn square(n) {
+            return multiply(n, n);
+        }
+        
+        square(7);
+    "#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::Number(49.0));
+}
+
+#[test]
+fn test_vm_recursive_functions() {
+    let input = r#"
+        fn fibonacci(n) {
+            if (n <= 1) {
+                return n;
+            } else {
+                return fibonacci(n - 1) + fibonacci(n - 2);
+            }
+        }
+        fibonacci(6);
+    "#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::Number(8.0)); // fibonacci(6) = 8
+}
+
+#[test]
+fn test_vm_variable_shadowing() {
+    let input = r#"
+        let x = "outer";
+        {
+            let x = "middle";
+            {
+                let x = "inner";
+                x;
+            }
+        }
+    "#;
+    let mut lexer = Lexer::new(input);
+    let tokens = lexer.tokenize().unwrap();
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse().unwrap();
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(&statements).unwrap();
+    
+    let mut vm = VM::new();
+    let result = vm.run(&chunk).unwrap();
+    assert_eq!(result, Value::String("inner".to_string()));
+}
+
+#[test]
+fn test_compile_all_operators() {
+    let test_cases = vec![
+        ("5 + 3;", Value::Number(8.0)),
+        ("5 - 3;", Value::Number(2.0)),
+        ("5 * 3;", Value::Number(15.0)),
+        ("15 / 3;", Value::Number(5.0)),
+        ("17 % 5;", Value::Number(2.0)),
+        ("-5;", Value::Number(-5.0)),
+    ];
+    
+    for (input, expected) in test_cases {
+        let mut lexer = Lexer::new(input);
+        let tokens = lexer.tokenize().unwrap();
+        let mut parser = Parser::new(tokens);
+        let statements = parser.parse().unwrap();
+        let mut compiler = Compiler::new();
+        let chunk = compiler.compile(&statements).unwrap();
+        
+        let mut vm = VM::new();
+        let result = vm.run(&chunk).unwrap();
+        assert_eq!(result, expected, "Failed for input: {}", input);
+    }
+}
+
+#[test]
+fn test_compile_logical_operators() {
+    let test_cases = vec![
+        ("true && true;", Value::Bool(true)),
+        ("true && false;", Value::Bool(false)),
+        ("false || true;", Value::Bool(true)),
+        ("false || false;", Value::Bool(false)),
+        ("!true;", Value::Bool(false)),
+        ("!false;", Value::Bool(true)),
+        ("!nil;", Value::Bool(true)),
+        ("!42;", Value::Bool(false)),
+    ];
+    
+    for (input, expected) in test_cases {
+        let mut lexer = Lexer::new(input);
+        let tokens = lexer.tokenize().unwrap();
+        let mut parser = Parser::new(tokens);
+        let statements = parser.parse().unwrap();
+        let mut compiler = Compiler::new();
+        let chunk = compiler.compile(&statements).unwrap();
+        
+        let mut vm = VM::new();
+        let result = vm.run(&chunk).unwrap();
+        assert_eq!(result, expected, "Failed for input: {}", input);
+    }
+}
