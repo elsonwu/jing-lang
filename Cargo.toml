@@ -1,6 +1,44 @@
 [package]
 name = "jing"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+description = "A simple toy programming language with virtual machine implementation"
+license = "MIT"
+authors = ["Elson Wu <elson@example.com>"]
+repository = "https://github.com/elsonwu/jing-lang"
+homepage = "https://github.com/elsonwu/jing-lang"
+documentation = "https://github.com/elsonwu/jing-lang"
+readme = "README.md"
+keywords = ["compiler", "interpreter", "vm", "language", "educational"]
+categories = ["compilers", "development-tools"]
+rust-version = "1.70.0"
+
+[lib]
+name = "jing"
+path = "src/lib.rs"
+
+[[bin]]
+name = "jing"
+path = "src/main.rs"
 
 [dependencies]
+
+# Linting configuration
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[lints.clippy]
+# Pedantic lints for high code quality
+pedantic = "warn"
+nursery = "warn"
+
+# Specific lints to deny
+missing_errors_doc = "deny"
+missing_panics_doc = "deny"
+missing_safety_doc = "deny"
+
+# Educational code allowances
+missing_docs_in_private_items = "allow"
+module_name_repetitions = "allow"
+similar_names = "allow"

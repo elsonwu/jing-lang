@@ -1,0 +1,107 @@
+name: Validate Conventional Commits
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  conventional-commits:
+    name: Validate Conventional Commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Configure types (must match release-please config)
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+          # Require scope for better organization
+          requireScope: false
+          # Allow custom scopes
+          validateSingleCommit: false
+          # Custom subject pattern
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            The subject "{subject}" found in the pull request title "{title}"
+            didn't match the configured pattern. Please ensure that the subject
+            doesn't start with an uppercase character.
+
+      - name: Validate commit messages
+        uses: wagoid/commitlint-github-action@v5
+        with:
+          configFile: .commitlintrc.json
+
+  changelog-preview:
+    name: Preview Changelog
+    runs-on: ubuntu-latest
+    if: github.event.action != 'closed'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Generate changelog preview
+        uses: google-github-actions/release-please-action@v4
+        id: release-preview
+        with:
+          command: github-release
+          release-type: rust
+          dry-run: true
+          
+      - name: Comment changelog preview
+        uses: actions/github-script@v7
+        if: steps.release-preview.outputs.pr
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('Changelog Preview')
+            );
+            
+            const body = `## 📋 Changelog Preview
+            
+            This PR would trigger the following changelog entry:
+            
+            ${steps.release-preview.outputs.body || 'No changelog entry would be generated.'}
+            
+            ---
+            *This preview is automatically generated based on conventional commits.*`;
+            
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }

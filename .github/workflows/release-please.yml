@@ -1,0 +1,86 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          # The release type (e.g., rust, node, python, etc.)
+          release-type: rust
+          # The package name (should match Cargo.toml name)
+          package-name: jing
+          # Include component in tag
+          include-component-in-tag: false
+          # Changelog sections for conventional commits
+          changelog-types: >
+            [
+              {"type":"feat","section":"Features","hidden":false},
+              {"type":"fix","section":"Bug Fixes","hidden":false},
+              {"type":"perf","section":"Performance Improvements","hidden":false},
+              {"type":"revert","section":"Reverts","hidden":false},
+              {"type":"docs","section":"Documentation","hidden":false},
+              {"type":"style","section":"Styles","hidden":true},
+              {"type":"refactor","section":"Code Refactoring","hidden":false},
+              {"type":"test","section":"Tests","hidden":true},
+              {"type":"build","section":"Build System","hidden":true},
+              {"type":"ci","section":"Continuous Integration","hidden":true},
+              {"type":"chore","section":"Miscellaneous","hidden":true}
+            ]
+          # Prerelease type (remove this line for stable releases)
+          # prerelease-type: beta
+          
+      # Build and upload assets when a release is created
+      - name: Checkout
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v4
+        
+      - name: Install Rust toolchain
+        if: ${{ steps.release.outputs.release_created }}
+        uses: dtolnay/rust-toolchain@stable
+        
+      - name: Build release binaries
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          # Add targets for cross-compilation
+          rustup target add x86_64-unknown-linux-gnu
+          rustup target add x86_64-pc-windows-gnu
+          rustup target add x86_64-apple-darwin
+          
+          # Install cross-compilation tools (Linux only)
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-x86-64
+          
+          # Build for Linux
+          cargo build --release --target x86_64-unknown-linux-gnu
+          
+          # Build for Windows (cross-compile from Linux)
+          cargo build --release --target x86_64-pc-windows-gnu
+          
+          # Create release archives
+          mkdir -p releases
+          
+          # Linux binary
+          tar -czf releases/jing-${{ steps.release.outputs.tag_name }}-linux-x86_64.tar.gz \
+            -C target/x86_64-unknown-linux-gnu/release jing
+          
+          # Windows binary  
+          zip -j releases/jing-${{ steps.release.outputs.tag_name }}-windows-x86_64.zip \
+            target/x86_64-pc-windows-gnu/release/jing.exe
+            
+      - name: Upload release artifacts
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ steps.release.outputs.tag_name }} releases/*

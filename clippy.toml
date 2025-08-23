@@ -1,0 +1,29 @@
+# Clippy configuration
+# Place in .clippy.toml or clippy.toml
+
+# Lint levels - these can also be set in Cargo.toml or via command line
+msrv = "1.70.0"
+
+# Cognitive complexity threshold
+cognitive-complexity-threshold = 30
+
+# Documentation lint configuration
+missing-docs-in-crate-items = true
+
+# Allow certain lints for educational/example code
+avoid-breaking-exported-api = false
+
+# Threshold for too_many_arguments lint
+too-many-arguments-threshold = 7
+
+# Threshold for type complexity lint
+type-complexity-threshold = 250
+
+# Single char lifetime names threshold
+single-char-lifetime-names-threshold = 4
+
+# Trivial copy pass by ref threshold  
+trivial-copy-size-limit = 64
+
+# Too many lines threshold
+too-many-lines-threshold = 100
