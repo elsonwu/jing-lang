@@ -226,6 +226,35 @@ For feature requests, please include:
 3. **Use Cases**: How would you use this feature?
 4. **Implementation**: Any ideas for implementation?
 
+## 🚧 Current Development TODOs
+
+### High Priority
+
+- **Recursive Functions**: Fix the VM's call stack management to properly support recursive function calls. The test in `tests/compiler_vm_tests.rs::test_vm_recursive_functions` is currently ignored and needs to be addressed.
+
+### Medium Priority
+
+- **Standard Library**: Implement built-in functions for string manipulation, math operations, and I/O
+- **Advanced Data Types**: Add support for arrays, objects/structs
+- **Error Handling**: Improve error messages with better source location tracking
+- **Performance**: Add benchmarking suite and identify optimization opportunities
+
+### Low Priority
+
+- **Module System**: Design and implement import/export functionality
+- **Enhanced REPL**: Add auto-completion and syntax highlighting
+- **JIT Compilation**: Explore just-in-time compilation for performance
+
+### Good First Issues
+
+These are great entry points for new contributors:
+
+- Add more built-in functions (math operations, string methods)
+- Improve error message formatting and clarity
+- Add more comprehensive test cases for edge conditions
+- Write additional example programs in the `examples/` directory
+- Enhance documentation with more detailed explanations
+
 ## ❓ Getting Help
 
 - **Issues**: Create an issue for bugs or feature requests

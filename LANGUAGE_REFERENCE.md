@@ -96,6 +96,8 @@ Function calls:
 let result = function_name(arg1, arg2);
 ```
 
+> **⚠️ Current Limitation**: Recursive function calls are not yet fully supported. While the syntax is accepted, the VM's call stack management needs enhancement for proper recursion. This is planned for a future release.
+
 ## Built-in Functions
 
 - `print(value)` - Print a value to the console

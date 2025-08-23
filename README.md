@@ -259,9 +259,33 @@ cargo test -- --nocapture
 - **Beginner's Guide**: Read [`HOW_IT_WORKS.md`](HOW_IT_WORKS.md) for a detailed explanation of how the language implementation works from scratch
 - **Visual Guide**: Check out [`VISUAL_GUIDE.md`](VISUAL_GUIDE.md) for diagrams and visual explanations of the compilation pipeline
 
+## 🚧 Known Limitations & TODO
+
+### Current Limitations
+
+- **Recursive Functions**: While function syntax is supported, recursive function calls are not yet properly implemented. The parser and compiler accept recursive function definitions, but the VM's call stack management needs enhancement for proper recursion support.
+
+### Planned Features
+
+- [ ] **Recursive Function Support**: Implement proper call stack management in the VM to support recursive function calls
+- [ ] **Advanced Data Types**: Arrays, objects/structs, and other complex data structures
+- [ ] **Standard Library**: Built-in functions for common operations (string manipulation, math functions, I/O)
+- [ ] **Import/Module System**: Support for organizing code across multiple files
+- [ ] **Error Handling**: Try-catch mechanisms for robust error handling
+- [ ] **Performance Optimizations**: Bytecode optimizations and JIT compilation
+- [ ] **Enhanced REPL**: Auto-completion, syntax highlighting, and better error reporting
+
+### Development TODOs
+
+- [ ] Fix recursive function test in `tests/compiler_vm_tests.rs` once recursion is implemented
+- [ ] Add benchmarking suite for performance testing
+- [ ] Improve error messages with better source location tracking
+- [ ] Add more comprehensive integration tests for edge cases
+
 ## 🤝 Contributing
 
 This is a learning project! Feel free to:
+
 - Add new language features
 - Improve error messages
 - Optimize the VM
