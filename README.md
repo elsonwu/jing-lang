@@ -143,6 +143,8 @@ cargo run examples/hello.jl
 cargo run
 ```
 
+**New to JiLang?** Check out the [`GETTING_STARTED.md`](GETTING_STARTED.md) guide for a step-by-step tutorial!
+
 ### Example Programs
 
 **Hello World** (`examples/hello.jl`):
@@ -251,6 +253,8 @@ cargo test -- --nocapture
 - **VM Architecture**: Examine `vm.rs` to understand stack-based execution
 - **Parser Design**: Look at `parser.rs` for recursive descent parsing techniques
 - **Error Handling**: See `error.rs` for comprehensive error reporting
+- **Beginner's Guide**: Read [`HOW_IT_WORKS.md`](HOW_IT_WORKS.md) for a detailed explanation of how the language implementation works from scratch
+- **Visual Guide**: Check out [`VISUAL_GUIDE.md`](VISUAL_GUIDE.md) for diagrams and visual explanations of the compilation pipeline
 
 ## 🤝 Contributing
 
