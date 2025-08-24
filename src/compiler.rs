@@ -352,38 +352,18 @@ impl Compiler {
     }
 
     fn compile_call_expression(&mut self, call: CallExpr) -> JingResult<()> {
-        // Handle built-in functions
+        // Handle print as a special case with its own opcode for now
+        // All other builtin functions go through the modular registry system
         if let Expr::Variable(var) = call.callee.as_ref() {
-            match var.name.as_str() {
-                "print" => {
-                    if call.args.len() != 1 {
-                        return Err(JingError::compile_error(
-                            "print() expects exactly 1 argument",
-                        ));
-                    }
-                    self.compile_expression(call.args[0].clone())?;
-                    self.chunk.emit(OpCode::Print);
-                    return Ok(());
+            if var.name.as_str() == "print" {
+                if call.args.len() != 1 {
+                    return Err(JingError::compile_error(
+                        "print() expects exactly 1 argument",
+                    ));
                 }
-                "len" => {
-                    if call.args.len() != 1 {
-                        return Err(JingError::compile_error("len() expects exactly 1 argument"));
-                    }
-                    self.compile_expression(call.args[0].clone())?;
-                    // For now, we'll implement len as a simple operation
-                    // In a real implementation, you'd add a LEN opcode
-                    return Err(JingError::compile_error("len() not yet implemented"));
-                }
-                "str" => {
-                    if call.args.len() != 1 {
-                        return Err(JingError::compile_error("str() expects exactly 1 argument"));
-                    }
-                    self.compile_expression(call.args[0].clone())?;
-                    // For now, we'll implement str as a simple operation
-                    // In a real implementation, you'd add a STR opcode
-                    return Err(JingError::compile_error("str() not yet implemented"));
-                }
-                _ => {}
+                self.compile_expression(call.args[0].clone())?;
+                self.chunk.emit(OpCode::Print);
+                return Ok(());
             }
         }
 
@@ -392,7 +372,7 @@ impl Compiler {
             self.compile_expression(arg.clone())?;
         }
 
-        // Compile function call
+        // Compile function call - this will be handled by the VM's modular builtin system
         self.compile_expression(*call.callee)?;
         self.chunk.emit(OpCode::Call(call.args.len()));
         Ok(())
