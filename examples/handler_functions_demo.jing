@@ -1,0 +1,137 @@
+// Complete HTTP Handler Functions Example
+// This shows how to define handler functions and register them with HTTP servers
+
+print("=== HTTP Handler Functions Demo ===");
+
+// Step 1: Define your handler functions
+// Handler functions should follow this pattern:
+// fn handler_name(request) { return response; }
+
+fn get_users_handler(request) {
+    print("get_users_handler called with request: " + request);
+    
+    // Handler should analyze the request and return appropriate response
+    let response_data = "{\"users\": [{\"id\": 1, \"name\": \"Alice\"}, {\"id\": 2, \"name\": \"Bob\"}]}";
+    let response = http_response(200, "application/json", response_data);
+    return response;
+}
+
+fn get_user_by_id(request) {
+    print("get_user_by_id called with request: " + request);
+    
+    // In a real implementation, you would parse the request to extract the user ID
+    // For now, return a sample user
+    let user_data = "{\"id\": 123, \"name\": \"John Doe\", \"email\": \"john@example.com\"}";
+    let response = http_response(200, "application/json", user_data);
+    return response;
+}
+
+fn create_user_handler(request) {
+    print("create_user_handler called with request: " + request);
+    
+    // In a real implementation, you would:
+    // 1. Parse the request body to get user data
+    // 2. Validate the data
+    // 3. Save to database
+    // 4. Return created user with ID
+    
+    let created_user = "{\"id\": 456, \"name\": \"New User\", \"status\": \"created\"}";
+    let response = http_response(201, "application/json", created_user);
+    return response;
+}
+
+fn update_user_handler(request) {
+    print("update_user_handler called with request: " + request);
+    
+    let updated_user = "{\"id\": 123, \"name\": \"Updated Name\", \"status\": \"updated\"}";
+    let response = http_response(200, "application/json", updated_user);
+    return response;
+}
+
+fn delete_user_handler(request) {
+    print("delete_user_handler called with request: " + request);
+    
+    let delete_response = "{\"message\": \"User deleted successfully\"}";
+    let response = http_response(200, "application/json", delete_response);
+    return response;
+}
+
+fn health_check_handler(request) {
+    print("health_check_handler called");
+    
+    let health_data = "{\"status\": \"healthy\", \"timestamp\": \"2025-08-24T12:00:00Z\"}";
+    let response = http_response(200, "application/json", health_data);
+    return response;
+}
+
+print("\n=== Handler Functions Defined ===");
+print("✅ get_users_handler - Returns list of all users");
+print("✅ get_user_by_id - Returns specific user by ID");  
+print("✅ create_user_handler - Creates new user");
+print("✅ update_user_handler - Updates existing user");
+print("✅ delete_user_handler - Deletes user");
+print("✅ health_check_handler - Health check endpoint");
+
+print("\n=== Setting Up HTTP Server with Handlers ===");
+
+// Step 2: Start HTTP server and get handle
+let api_server = start_http_server(8080);
+print("API Server started: " + api_server);
+
+// Step 3: Register handler functions with routes
+print("\n=== Registering Handler Functions ===");
+
+let route1 = http_register_handler(api_server, "GET", "/users", "get_users_handler");
+print(route1);
+
+let route2 = http_register_handler(api_server, "GET", "/users/123", "get_user_by_id");
+print(route2);
+
+let route3 = http_register_handler(api_server, "POST", "/users", "create_user_handler");
+print(route3);
+
+let route4 = http_register_handler(api_server, "PUT", "/users/123", "update_user_handler");
+print(route4);
+
+let route5 = http_register_handler(api_server, "DELETE", "/users/123", "delete_user_handler");
+print(route5);
+
+let route6 = http_register_handler(api_server, "GET", "/health", "health_check_handler");
+print(route6);
+
+print("\n=== API Endpoints Ready ===");
+print("Your API is now running on http://127.0.0.1:8080");
+print("");
+print("Available endpoints:");
+print("  GET    /users       → get_users_handler()");
+print("  GET    /users/123   → get_user_by_id()");
+print("  POST   /users       → create_user_handler()");
+print("  PUT    /users/123   → update_user_handler()");
+print("  DELETE /users/123   → delete_user_handler()");
+print("  GET    /health      → health_check_handler()");
+
+print("\n=== Current Implementation Status ===");
+print("🟡 IMPORTANT NOTE: Handler function calling is not yet fully implemented!");
+print("🟡 Currently, custom routes return placeholder responses.");
+print("🟡 The functions above show the INTENDED API pattern.");
+print("");
+print("What works NOW:");
+print("✅ Function definition and registration");
+print("✅ Server handle-based route management");
+print("✅ Built-in routes (/, /status, /echo)");
+print("✅ HTTP response generation");
+print("");
+print("What's PLANNED:");
+print("🔄 Automatic function calling when routes are hit");
+print("🔄 Request object with method, path, headers, body");
+print("🔄 Response object parsing and HTTP response generation");
+print("🔄 Route parameter extraction (e.g., /users/{id})");
+
+print("\n=== Test the Built-in Routes (These Work Now) ===");
+print("Try these URLs in your browser:");
+print("  http://127.0.0.1:8080/           → Built-in home page");
+print("  http://127.0.0.1:8080/status     → Server status");
+print("  http://127.0.0.1:8080/echo       → Echo service (POST)");
+
+// Leave server running for testing
+print("\nServer is running... (Press Ctrl+C to stop)");

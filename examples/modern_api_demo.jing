@@ -1,0 +1,69 @@
+// Modern Web Framework Style API Demo
+// This demonstrates the user's requested API pattern: 
+// let user_service = start_http_server(8080);
+// user_service.route("GET", "/users/{id}", get_user)
+
+print("=== Modern API Pattern Demo ===");
+
+// Start servers and get handles (similar to Express.js/Flask)
+let user_service = start_http_server(8080);
+print("User service started:");
+print(user_service);
+
+let admin_service = start_http_server(9001);  
+print("Admin service started:");
+print(admin_service);
+
+print("\n=== Setting up User Service Routes ===");
+
+// Register routes using server handle (modern framework style)
+let route1 = http_register_handler(user_service, "GET", "/users", "get_all_users");
+print(route1);
+
+let route2 = http_register_handler(user_service, "GET", "/users/123", "get_user");
+print(route2);
+
+let route3 = http_register_handler(user_service, "POST", "/users", "create_user");
+print(route3);
+
+let route4 = http_register_handler(user_service, "PUT", "/users/123", "update_user");
+print(route4);
+
+let route5 = http_register_handler(user_service, "DELETE", "/users/123", "delete_user");
+print(route5);
+
+print("\n=== Setting up Admin Service Routes ===");
+
+// Register different routes on admin service
+let admin1 = http_register_handler(admin_service, "GET", "/health", "health_check");
+print(admin1);
+
+let admin2 = http_register_handler(admin_service, "GET", "/metrics", "get_metrics");
+print(admin2);
+
+let admin3 = http_register_handler(admin_service, "POST", "/shutdown", "shutdown_system");
+print(admin3);
+
+print("\n=== Server Status ===");
+let servers = list_http_servers();
+print(servers);
+
+print("\n=== API Information ===");
+print("User Service API (port 8080):");
+print("  GET    /users      - List all users");
+print("  GET    /users/123  - Get specific user"); 
+print("  POST   /users      - Create new user");
+print("  PUT    /users/123  - Update user");
+print("  DELETE /users/123  - Delete user");
+print("");
+print("Admin Service API (port 9001):");
+print("  GET    /health     - Health check");
+print("  GET    /metrics    - System metrics");
+print("  POST   /shutdown   - Shutdown system");
+print("");
+print("✅ Clean, object-oriented API similar to Express.js/Flask!");
+print("✅ Each server handle manages its own routes independently!");
+print("✅ No confusion about which routes belong to which server!");
+
+// Note: The servers are intentionally left running to show the pattern
+// In real applications, you would add proper shutdown handling

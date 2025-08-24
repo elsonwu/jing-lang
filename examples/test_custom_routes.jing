@@ -1,0 +1,31 @@
+// Test Custom Handler Routes (Current State)
+// This demonstrates what actually happens when you hit custom routes
+
+print("=== Testing Custom Route Behavior ===");
+
+// Define handler function  
+fn test_handler(request) {
+    print("This function should be called but won't be!");
+    return http_response(200, "text/plain", "Hello from handler!");
+}
+
+// Start server and register handler
+let server = start_http_server(8085);
+print("Server: " + server);
+
+let reg = http_register_handler(server, "GET", "/test", "test_handler");
+print(reg);
+
+print("\n=== Server Ready ===");  
+print("Try accessing: http://127.0.0.1:8085/test");
+print("You'll see a placeholder response, not the actual handler result.");
+print("");
+print("Built-in routes that DO work:");
+print("  http://127.0.0.1:8085/        → Home page");
+print("  http://127.0.0.1:8085/status  → Server status");
+
+print("\nPress Enter to stop server...");
+let input = readline();
+
+let stop = stop_http_server(server);
+print("Stopped: " + stop);

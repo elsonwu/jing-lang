@@ -1,0 +1,17 @@
+// Current confusing behavior demonstration
+print("=== Current Confusing Behavior ===");
+
+// Start server on port 8080
+let server1 = start_http_server(8080);
+print("Server 1:", server1);
+
+// Start server on port 9000  
+let server2 = start_http_server(9000);
+print("Server 2:", server2);
+
+// Register handler - but which server does this affect?
+http_register_handler("GET", "/api/users", "get_users");
+print("Handler registered - but for which server?");
+
+// Both servers will now have the same handler!
+// This is confusing because there's no clear association
