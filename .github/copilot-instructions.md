@@ -52,6 +52,14 @@ docs(readme): update I/O capabilities section
 test(vm): add recursive function tests
 ```
 
+#### Git Workflow Rules (CRITICAL)
+- **NEVER use interactive rebase (`git rebase -i`)** - Requires manual intervention when user may not be monitoring
+- **Use non-interactive git commands only**: `git rebase`, `git commit --amend`, `git reset`, etc.
+- **For commit cleanup**: Use `git reset --soft HEAD~n` followed by new commit instead of interactive rebase
+- **For history modification**: Use `git commit --amend` for single commits or `git reset` + recommit for multiple
+- **Always use `--force-with-lease`** when force pushing to protect against accidental overwrites
+- **Automated workflows only** - All git operations must work without user interaction
+
 ### 3. Architecture Patterns (FOLLOW EXACTLY)
 
 #### Current Implementation Status
