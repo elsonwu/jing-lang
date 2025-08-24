@@ -174,11 +174,11 @@ print("You entered: " + text);
 ### HTTP Server Functions
 
 #### `start_http_server(port)`
-Start an HTTP server on the specified port (8000-9999).
+Start an HTTP server on the specified port (8000-9999). Returns a server handle string.
 
 ```jing
-let server_result = start_http_server(8080);
-print(server_result); // "HTTP server started on port 8080"
+let server_handle = start_http_server(8080);
+print(server_handle); // "server_8080"
 ```
 
 The server automatically provides these endpoints:
@@ -186,12 +186,13 @@ The server automatically provides these endpoints:
 - `GET /status` - JSON status information
 - `POST /echo` - Echo back request body as JSON
 
-#### `stop_http_server(port)`
-Stop the HTTP server running on the specified port.
+#### `stop_http_server(server_handle)`
+Stop the HTTP server using its server handle.
 
 ```jing
-let stop_result = stop_http_server(8080);
-print(stop_result); // "HTTP server on port 8080 stopped"
+let server = start_http_server(8080);
+let stop_result = stop_http_server(server);
+print(stop_result); // "HTTP server server_8080 stopped"
 ```
 
 #### `list_http_servers()`
@@ -218,6 +219,25 @@ let error_resp = http_response(404, "text/plain", "Page not found");
 ```
 
 Note: Currently this returns a formatted response string. Future versions may integrate with custom request handlers.
+
+#### `http_register_handler(server_handle, method, path, handler_function_name)`
+Register a custom Jing function to handle HTTP routes on a specific server.
+
+```jing
+let server = start_http_server(8080);
+
+// Register handlers using server handle
+http_register_handler(server, "GET", "/users", "get_users");
+http_register_handler(server, "POST", "/users", "create_user");
+http_register_handler(server, "DELETE", "/users/123", "delete_user");
+```
+
+- `server_handle`: Server handle returned by `start_http_server()`
+- `method`: HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)
+- `path`: URL path to handle (e.g., "/users", "/api/data")
+- `handler_function_name`: Name of Jing function to call (as string)
+
+Note: Handler function calling is not yet implemented. Currently returns placeholder responses.
 
 ## Running Jing Programs
 ```jing

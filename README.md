@@ -114,18 +114,18 @@ let line = readline();            // Read line without prompt
 
 #### HTTP Server Functions
 ```jing
-// Start multiple servers on different ports
+// Start multiple servers on different ports (returns server handles)
 let api_server = start_http_server(8080);
 let admin_server = start_http_server(9000);
 
-// Register server-specific route handlers  
-http_register_handler(8080, "GET", "/api/users", "get_users_handler");
-http_register_handler(8080, "POST", "/api/users", "create_user_handler");
-http_register_handler(8080, "DELETE", "/api/users/123", "delete_user_handler");
+// Register server-specific route handlers using handles
+http_register_handler(api_server, "GET", "/api/users", "get_users_handler");
+http_register_handler(api_server, "POST", "/api/users", "create_user_handler");
+http_register_handler(api_server, "DELETE", "/api/users/123", "delete_user_handler");
 
 // Different handlers for admin server
-http_register_handler(9000, "GET", "/admin/stats", "get_admin_stats");
-http_register_handler(9000, "POST", "/admin/reset", "reset_system");
+http_register_handler(admin_server, "GET", "/admin/stats", "get_admin_stats");
+http_register_handler(admin_server, "POST", "/admin/reset", "reset_system");
 
 // List all running servers
 let servers = list_http_servers();
@@ -134,9 +134,9 @@ print(servers);
 // Create HTTP responses (for use in handlers)
 let response = http_response(200, "application/json", "{\"status\": \"ok\"}");
 
-// Stop servers when done  
-let stopped_api = stop_http_server(8080);
-let stopped_admin = stop_http_server(9000);
+// Stop servers when done using handles
+let stopped_api = stop_http_server(api_server);
+let stopped_admin = stop_http_server(admin_server);
 ```
 
 **Built-in Routes (available on all servers):**
@@ -145,10 +145,10 @@ let stopped_admin = stop_http_server(9000);
 - `POST /echo` - Echo service returning request body
 
 **Custom Handler Registration:**
-- Register Jing functions to handle specific HTTP routes on specific servers
+- Register Jing functions to handle specific HTTP routes using server handles
 - Each server maintains its own independent set of route handlers
 - Supports GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS methods
-- Must specify port number to associate handlers with specific servers
+- Must use server handle returned from `start_http_server()` to associate handlers with specific servers
 - Custom handlers currently return placeholder responses (handler execution coming in future update)
 
 ## 🔧 Bytecode Instructions
