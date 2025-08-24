@@ -19,16 +19,30 @@ Comprehensive demonstration of core language features.
 Demonstrates recursive function calls with factorial and fibonacci examples.
 
 ### [`file_io.jing`](file_io.jing)
+
 Complete file I/O operations demonstration including:
+
 - Interactive user input with `input()` and `readline()`
 - File operations: `read_file()`, `write_file()`, `file_exists()`
 - Error handling for file operations
 - Real-world usage patterns
 
+### [`http_server.jing`](http_server.jing)
+
+HTTP server implementation demonstration including:
+
+- Starting HTTP servers with `start_http_server()`
+- Managing server lifecycle with `stop_http_server()`
+- Creating HTTP responses with `http_response()`
+- Listing running servers with `list_http_servers()`
+- Built-in endpoints: `/`, `/status`, `/echo`
+
 ### [`fizzbuzz.jing`](fizzbuzz.jing)
+
 Classic FizzBuzz implementation showing loops and conditionals.
 
 ### [`fibonacci.jing`](fibonacci.jing)
+
 Fibonacci sequence calculation.
 
 ## Function Examples

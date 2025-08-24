@@ -5,6 +5,7 @@
 //! implementing the BuiltinFunction trait and registering it.
 
 pub mod core;
+pub mod http;
 pub mod io;
 pub mod math;
 pub mod string;
@@ -36,6 +37,12 @@ pub fn init_builtins() {
     register_builtin(Arc::new(io::ReadFileFunction));
     register_builtin(Arc::new(io::WriteFileFunction));
     register_builtin(Arc::new(io::FileExistsFunction));
+
+    // HTTP server functions
+    register_builtin(Arc::new(http::StartHttpServerFunction));
+    register_builtin(Arc::new(http::StopHttpServerFunction));
+    register_builtin(Arc::new(http::HttpResponseFunction));
+    register_builtin(Arc::new(http::ListHttpServersFunction));
 }
 
 /// Get all registered builtin function names

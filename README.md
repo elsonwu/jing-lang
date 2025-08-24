@@ -112,6 +112,23 @@ let name = input("What's your name? ");
 let line = readline();            // Read line without prompt
 ```
 
+#### HTTP Server Functions
+```jing
+// Start HTTP server on port 8080
+let server = start_http_server(8080);
+print(server);
+
+// List all running servers
+let servers = list_http_servers();
+print(servers);
+
+// Create HTTP responses
+let response = http_response(200, "application/json", '{"status": "ok"}');
+
+// Stop server when done
+let stopped = stop_http_server(8080);
+```
+
 ## 🔧 Bytecode Instructions
 
 The VM uses a simple instruction set:
@@ -252,9 +269,10 @@ register_builtin(Arc::new(math::MyFunction));
 - **Core**: `print()`, `type()`
 - **Math**: `sqrt()`, `abs()`, `max()`, `min()`
 - **String**: `len()`, `upper()`, `lower()`, `reverse()`
-- **I/O**: `readline()`, `input()`
+- **I/O**: `readline()`, `input()`, `read_file()`, `write_file()`, `file_exists()`
+- **HTTP Server**: `start_http_server()`, `stop_http_server()`, `http_response()`, `list_http_servers()`
 
-*The modular design makes adding new categories (like JSON, HTTP, file I/O) straightforward!*
+*The modular design makes adding new categories (like JSON, networking, databases) straightforward!*
 
 ## 📁 Project Structure
 

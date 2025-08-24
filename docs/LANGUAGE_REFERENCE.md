@@ -171,6 +171,54 @@ let text = readline();
 print("You entered: " + text);
 ```
 
+### HTTP Server Functions
+
+#### `start_http_server(port)`
+Start an HTTP server on the specified port (8000-9999).
+
+```jing
+let server_result = start_http_server(8080);
+print(server_result); // "HTTP server started on port 8080"
+```
+
+The server automatically provides these endpoints:
+- `GET /` - Welcome page with endpoint information
+- `GET /status` - JSON status information
+- `POST /echo` - Echo back request body as JSON
+
+#### `stop_http_server(port)`
+Stop the HTTP server running on the specified port.
+
+```jing
+let stop_result = stop_http_server(8080);
+print(stop_result); // "HTTP server on port 8080 stopped"
+```
+
+#### `list_http_servers()`
+List all currently running HTTP servers.
+
+```jing
+let servers = list_http_servers();
+print(servers);
+// Output: "Running HTTP servers:\n  Port 8080: running\n  Port 8081: running"
+```
+
+#### `http_response(status, content_type, body)`
+Create an HTTP response with the specified status code, content type, and body.
+
+```jing
+// JSON response
+let json_resp = http_response(200, "application/json", '{"message": "Hello!"}');
+
+// HTML response  
+let html_resp = http_response(200, "text/html", "<h1>Welcome</h1>");
+
+// Error response
+let error_resp = http_response(404, "text/plain", "Page not found");
+```
+
+Note: Currently this returns a formatted response string. Future versions may integrate with custom request handlers.
+
 ## Running Jing Programs
 ```jing
 let x = 15;
