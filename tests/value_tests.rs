@@ -1,4 +1,4 @@
-use jing::*;
+use jing::value::{Value, Environment};
 
 #[test]
 fn test_value_display() {

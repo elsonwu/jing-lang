@@ -1,4 +1,8 @@
-use jing::*;
+use jing::compiler::Compiler;
+use jing::error::JingError;
+use jing::lexer::Lexer;
+use jing::parser::Parser;
+use jing::vm::VM;
 
 #[test]
 fn test_lexical_errors() {

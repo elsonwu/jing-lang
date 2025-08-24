@@ -66,9 +66,83 @@ Common scopes for this project:
 - `vm`: Changes to virtual machine execution
 - `value`: Changes to value types and operations
 - `error`: Changes to error handling
+- `features`: Changes to trait system
+- `registry`: Changes to function registry
+- `builtins`: Changes to built-in functions
 - `cli`: Changes to command-line interface
 - `docs`: Documentation changes
 - `tests`: Test-related changes
+
+## 🔧 Extending Jing
+
+Jing features a **modular architecture** that makes contributing new features incredibly easy!
+
+### Adding New Built-in Functions
+
+The most common contribution is adding new built-in functions. Thanks to the modular design, this requires **zero changes to core files**:
+
+1. **Choose the right category** (or create a new one):
+   - `core.rs`: Core language functions
+   - `math.rs`: Mathematical operations
+   - `string.rs`: String manipulation  
+   - `io.rs`: Input/output operations
+   - Create `src/builtins/new_category.rs` for new categories
+
+2. **Implement the BuiltinFunction trait**:
+```rust
+#[derive(Debug)]
+pub struct MyNewFunction;
+
+impl BuiltinFunction for MyNewFunction {
+    fn name(&self) -> &str { "my_function" }
+    fn arity(&self) -> usize { 1 }
+    
+    fn call(&self, args: Vec<Value>) -> JingResult<Value> {
+        // Your implementation here
+        Ok(Value::Number(42.0))
+    }
+    
+    fn help(&self) -> &str {
+        "my_function(arg) - Description of what it does"
+    }
+}
+```
+
+3. **Register it** in `src/builtins/mod.rs`:
+```rust
+register_builtin(Arc::new(category::MyNewFunction));
+```
+
+4. **Add tests** in the appropriate test file
+5. **Update documentation** if needed
+
+### Creating New Function Categories
+
+Want to add JSON support? HTTP requests? File I/O?
+
+1. **Create** `src/builtins/new_category.rs`
+2. **Add module** to `src/builtins/mod.rs`
+3. **Implement functions** using the BuiltinFunction trait
+4. **Register all functions** in the init_builtins() function
+
+### Contributing to Core Language Features
+
+For syntax changes (new operators, control structures, etc.), follow the traditional compiler pipeline:
+
+1. **Lexer** (`lexer.rs`): Add new token types
+2. **Parser** (`parser.rs`): Add AST nodes and parsing logic  
+3. **Compiler** (`compiler.rs`): Generate bytecode
+4. **VM** (`vm.rs`): Implement execution logic
+5. **Tests**: Comprehensive test coverage
+
+### Pull Request Guidelines for Extensions
+
+When adding new built-in functions:
+- **Title**: `feat(builtins): add JSON parsing functions`
+- **Category**: Choose appropriate builtin category
+- **Tests**: Include unit tests for your functions
+- **Documentation**: Update help text and add to README if needed
+- **Performance**: Consider edge cases and error handling
 
 ## 🧪 Testing
 
@@ -154,7 +228,17 @@ src/
 ├── compiler.rs      # Bytecode generation
 ├── vm.rs           # Virtual machine
 ├── value.rs        # Value types
-└── error.rs        # Error handling
+├── error.rs        # Error handling
+├── features/        # Trait definitions for extensions
+│   └── mod.rs      # BuiltinFunction trait
+├── registry/        # Global function registry
+│   └── mod.rs      # Thread-safe registration system
+└── builtins/        # Built-in function implementations
+    ├── mod.rs      # Initialization and registration
+    ├── core.rs     # Core functions (print, type)
+    ├── math.rs     # Math functions (sqrt, abs, etc.)
+    ├── string.rs   # String functions (len, upper, etc.)
+    └── io.rs       # I/O functions (readline, input)
 
 tests/
 ├── integration_tests.rs  # End-to-end tests

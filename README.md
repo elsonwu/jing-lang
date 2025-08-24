@@ -187,42 +187,83 @@ while i <= 100 {
 
 ## 🔧 Extending Jing
 
-The modular design makes it easy to extend Jing:
+Jing features a **modular, plugin-like architecture** that makes extending the language incredibly easy:
+
+### Adding New Built-in Functions
+
+The new modular system allows adding functions without touching core files:
+
+1. **Implement the BuiltinFunction trait**:
+
+```rust
+use crate::features::BuiltinFunction;
+use crate::value::Value;
+use crate::error::{JingError, JingResult};
+
+#[derive(Debug)]
+pub struct MyFunction;
+
+impl BuiltinFunction for MyFunction {
+    fn name(&self) -> &str { "my_function" }
+    fn arity(&self) -> usize { 1 }
+    
+    fn call(&self, args: Vec<Value>) -> JingResult<Value> {
+        // Your implementation here
+        Ok(Value::Number(42.0))
+    }
+    
+    fn help(&self) -> &str {
+        "my_function(arg) - Description of what it does"
+    }
+}
+```
+
+2. **Register it in the appropriate builtin module** (e.g., `src/builtins/math.rs`, `src/builtins/string.rs`):
+
+```rust
+// In src/builtins/mod.rs
+register_builtin(Arc::new(math::MyFunction));
+```
+
+3. **Done!** Your function is now available in the language.
 
 ### Adding New Data Types
+
 1. Extend the `Value` enum in `value.rs`
 2. Update comparison and conversion functions
 3. Add new bytecode instructions if needed
 
-### Adding New Operators
-1. Add tokens to the lexer
-2. Update the parser with precedence rules
-3. Add compilation logic
-4. Implement VM instruction
+### Current Built-in Function Categories
 
-### Adding New Built-in Functions
-1. Add function name to the compiler's built-ins
-2. Implement the function in the VM
-3. Update documentation
+- **Core**: `print()`, `type()`
+- **Math**: `sqrt()`, `abs()`, `max()`, `min()`
+- **String**: `len()`, `upper()`, `lower()`, `reverse()`
+- **I/O**: `readline()`, `input()`
 
-### Adding New Control Structures
-1. Add keywords to the lexer
-2. Update parser grammar
-3. Add compilation logic with jump instructions
-4. Test with examples
+*The modular design makes adding new categories (like JSON, HTTP, file I/O) straightforward!*
 
 ## 📁 Project Structure
 
-```
+```text
 src/
 ├── main.rs          # Entry point and REPL
+├── lib.rs           # Public API and initialization
 ├── lexer.rs         # Tokenization
 ├── parser.rs        # AST construction
 ├── compiler.rs      # Bytecode generation
 ├── vm.rs           # Virtual machine
 ├── value.rs        # Value types and operations
 ├── error.rs        # Error handling
-└── lib.rs          # Library exports
+├── features/        # Trait definitions for extensibility
+│   └── mod.rs      # BuiltinFunction trait
+├── registry/        # Global function registry
+│   └── mod.rs      # Thread-safe registration system
+└── builtins/        # Built-in function implementations
+    ├── mod.rs      # Initialization and registration
+    ├── core.rs     # Core functions (print, type)
+    ├── math.rs     # Math functions (sqrt, abs, etc.)
+    ├── string.rs   # String functions (len, upper, etc.)
+    └── io.rs       # I/O functions (readline, input)
 
 examples/
 ├── hello.jing        # Hello world
@@ -231,10 +272,12 @@ examples/
 └── calculator.jing   # Simple calculator
 
 tests/
-├── lexer_tests.rs  # Lexer unit tests
-├── parser_tests.rs # Parser unit tests
-├── vm_tests.rs     # VM integration tests
-└── examples_tests.rs # Example program tests
+├── lexer_tests.rs       # Lexer unit tests
+├── parser_tests.rs      # Parser unit tests
+├── compiler_vm_tests.rs # VM integration tests
+├── value_tests.rs       # Value system tests
+├── error_tests.rs       # Error handling tests
+└── integration_tests.rs # End-to-end tests
 ```
 
 ## 🧪 Testing

@@ -1,4 +1,8 @@
-use jing::*;
+use jing::compiler::Compiler;
+use jing::lexer::Lexer;
+use jing::parser::Parser;
+use jing::value::Value;
+use jing::vm::VM;
 
 #[test]
 fn test_compile_literals() {

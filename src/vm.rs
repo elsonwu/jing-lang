@@ -70,6 +70,13 @@ impl VM {
                             chunk_start: func_info.start_address,
                         };
                         self.push(function_value);
+                    } else if let Some(builtin) = crate::registry::get_builtin(&name) {
+                        // Check for builtin functions
+                        let builtin_value = Value::BuiltinFunction {
+                            name: name.clone(),
+                            function: builtin,
+                        };
+                        self.push(builtin_value);
                     } else {
                         return Err(JingError::runtime_error(format!(
                             "Undefined variable or function '{}'",
@@ -286,6 +293,33 @@ impl VM {
                 for _ in 0..=arity {
                     self.stack.pop();
                 }
+            }
+            Value::BuiltinFunction { name, function } => {
+                if arity != function.arity() {
+                    return Err(JingError::runtime_error(format!(
+                        "Builtin function '{}' expects {} arguments, got {}",
+                        name, function.arity(), arity
+                    )));
+                }
+
+                // Collect arguments from the stack
+                let mut args = Vec::new();
+                let stack_len = self.stack.len();
+                for i in 0..arity {
+                    let arg_index = stack_len - arity - 1 + i; // -1 for function itself
+                    args.push(self.stack[arg_index].clone());
+                }
+
+                // Call the builtin function
+                let result = function.call(args)?;
+
+                // Remove the function and arguments from the stack
+                for _ in 0..=arity {
+                    self.stack.pop();
+                }
+
+                // Push the result
+                self.push(result);
             }
             _ => {
                 return Err(JingError::runtime_error("Can only call functions"));

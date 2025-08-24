@@ -1,4 +1,4 @@
-use jing::*;
+use jing::lexer::{Lexer, Token, TokenType};
 
 #[test]
 fn test_lexer_keywords() {
