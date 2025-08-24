@@ -63,11 +63,10 @@ test(vm): add recursive function tests
 ### 3. Architecture Patterns (FOLLOW EXACTLY)
 
 #### Current Implementation Status
-- ✅ **84+ tests passing** including I/O functions, HTTP server, and recursive functions
+- ✅ **78+ tests passing** including I/O functions and recursive functions
 - ✅ Recursive function support with proper local scope management
 - ✅ File I/O functions: read_file(), write_file(), file_exists()
 - ✅ Interactive I/O: input(), readline()
-- ✅ HTTP Server capabilities: start_http_server(), stop_http_server(), http_response(), list_http_servers()
 - ✅ Modular builtin system with trait-based architecture
 - ✅ Pre-commit hooks enforcing quality gates
 

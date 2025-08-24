@@ -112,45 +112,6 @@ let name = input("What's your name? ");
 let line = readline();            // Read line without prompt
 ```
 
-#### HTTP Server Functions
-```jing
-// Start multiple servers on different ports (returns server handles)
-let api_server = start_http_server(8080);
-let admin_server = start_http_server(9000);
-
-// Register server-specific route handlers using handles
-http_register_handler(api_server, "GET", "/api/users", "get_users_handler");
-http_register_handler(api_server, "POST", "/api/users", "create_user_handler");
-http_register_handler(api_server, "DELETE", "/api/users/123", "delete_user_handler");
-
-// Different handlers for admin server
-http_register_handler(admin_server, "GET", "/admin/stats", "get_admin_stats");
-http_register_handler(admin_server, "POST", "/admin/reset", "reset_system");
-
-// List all running servers
-let servers = list_http_servers();
-print(servers);
-
-// Create HTTP responses (for use in handlers)
-let response = http_response(200, "application/json", "{\"status\": \"ok\"}");
-
-// Stop servers when done using handles
-let stopped_api = stop_http_server(api_server);
-let stopped_admin = stop_http_server(admin_server);
-```
-
-**Built-in Routes (available on all servers):**
-- `GET /` - Welcome message with server info
-- `GET /status` - JSON server status with timestamp
-- `POST /echo` - Echo service returning request body
-
-**Custom Handler Registration:**
-- Register Jing functions to handle specific HTTP routes using server handles
-- Each server maintains its own independent set of route handlers
-- Supports GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS methods
-- Must use server handle returned from `start_http_server()` to associate handlers with specific servers
-- Custom handlers currently return placeholder responses (handler execution coming in future update)
-
 ## 🔧 Bytecode Instructions
 
 The VM uses a simple instruction set:
@@ -292,7 +253,6 @@ register_builtin(Arc::new(math::MyFunction));
 - **Math**: `sqrt()`, `abs()`, `max()`, `min()`
 - **String**: `len()`, `upper()`, `lower()`, `reverse()`
 - **I/O**: `readline()`, `input()`, `read_file()`, `write_file()`, `file_exists()`
-- **HTTP Server**: `start_http_server()`, `stop_http_server()`, `http_response()`, `list_http_servers()`, `http_register_handler()`
 
 *The modular design makes adding new categories (like JSON, networking, databases) straightforward!*
 

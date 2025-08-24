@@ -27,32 +27,6 @@ Complete file I/O operations demonstration including:
 - Error handling for file operations
 - Real-world usage patterns
 
-### [`http_server.jing`](http_server.jing)
-
-Basic HTTP server demonstration including:
-
-- Starting HTTP servers with `start_http_server()`
-- Creating HTTP responses with `http_response()`
-- Built-in endpoints: `/`, `/status`, `/echo`
-
-### [`http_server_with_handlers.jing`](http_server_with_handlers.jing)
-
-Advanced HTTP server with custom route handlers:
-
-- Multiple server management using server handles
-- Custom route registration with `http_register_handler()`
-- Server-specific handler configuration
-- Handler function definition patterns
-
-### [`server_lifecycle_demo.jing`](server_lifecycle_demo.jing)
-
-Complete server lifecycle management:
-
-- Starting multiple services with different purposes
-- Server handle management and configuration
-- Stopping servers using handles
-- Service monitoring with `list_http_servers()`
-
 ### [`fizzbuzz.jing`](fizzbuzz.jing)
 
 Classic FizzBuzz implementation showing loops and conditionals.
