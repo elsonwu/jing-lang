@@ -1,0 +1,24 @@
+// Recursive Fibonacci function
+fn fibonacci(n) {
+    if (n <= 1) {
+        return n;
+    } else {
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+}
+
+// Recursive factorial function
+fn factorial(n) {
+    if (n <= 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
+
+// Test recursive functions
+print("=== Recursive Function Examples ===");
+print("Testing fibonacci(8):");
+print(fibonacci(8));
+print("Testing factorial(6):");
+print(factorial(6));

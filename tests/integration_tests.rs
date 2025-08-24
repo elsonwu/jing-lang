@@ -157,13 +157,16 @@ fn test_function_definition_and_call() {
 
 #[test]
 fn test_recursive_function() {
-    // Simplified test - just test that we can define and call a simple function
-    // The recursive factorial test requires proper parameter handling which is complex
+    // Test recursive factorial function
     let input = r#"
-        fn get_ten() {
-            return 10;
+        fn factorial(n) {
+            if (n <= 1) {
+                return 1;
+            } else {
+                return n * factorial(n - 1);
+            }
         }
-        let result = get_ten();
+        let result = factorial(4);
     "#;
     let mut lexer = Lexer::new(input);
     let tokens = lexer.tokenize().unwrap();
@@ -174,7 +177,7 @@ fn test_recursive_function() {
     let mut vm = VM::new();
     vm.interpret(chunk).unwrap();
     let result = vm.get_global("result").unwrap();
-    assert_eq!(result, Value::Number(10.0));
+    assert_eq!(result, Value::Number(24.0)); // factorial(4) = 24
 }
 
 #[test]

@@ -325,18 +325,7 @@ fn test_vm_function_calls() {
     assert_eq!(result, Value::Number(49.0));
 }
 
-// TODO: Implement recursive function support
-// This test is currently ignored because the VM's call stack management
-// doesn't properly handle recursive calls. The parser and compiler accept
-// the syntax, but the VM needs enhancement to support proper recursion.
-//
-// When implementing recursion support:
-// 1. Fix call stack overflow issues in VM::interpret()
-// 2. Ensure proper function scope management for recursive calls
-// 3. Handle tail call optimization if needed
-// 4. Remove the #[ignore] attribute and verify the test passes
 #[test]
-#[ignore = "Recursive functions not yet supported in Jing language"]
 fn test_vm_recursive_functions() {
     let input = r#"
         fn fibonacci(n) {

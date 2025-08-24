@@ -9,6 +9,7 @@ struct CallFrame {
     function_name: String,
     return_address: usize,
     stack_base: usize,
+    locals: Environment, // Local variable environment for this function call
 }
 
 /// Virtual Machine for executing Jing bytecode
@@ -59,7 +60,15 @@ impl VM {
                 }
 
                 OpCode::Load(name) => {
-                    // First try to load from globals (variables)
+                    // First try to load from current function's local scope
+                    if let Some(current_frame) = self.call_stack.last() {
+                        if let Ok(value) = current_frame.locals.get(&name) {
+                            self.push(value);
+                            continue;
+                        }
+                    }
+
+                    // Then try to load from globals (variables)
                     if let Ok(value) = self.globals.get(&name) {
                         self.push(value);
                     } else if let Some(func_info) = self.chunk.functions.get(&name) {
@@ -263,12 +272,15 @@ impl VM {
 
                 // Get function info to access parameter names
                 let func_info = self.chunk.functions.get(&name).cloned();
+
+                // Create local environment for this function call
+                let mut local_env = Environment::new();
                 if let Some(func_info) = func_info {
-                    // Bind arguments to parameter names in global environment
+                    // Bind arguments to parameter names in local environment
                     let args = self.get_function_args(arity);
                     for (i, param_name) in func_info.locals.iter().enumerate() {
                         if i < arity {
-                            self.globals.define(param_name.clone(), args[i].clone());
+                            local_env.define(param_name.clone(), args[i].clone());
                         }
                     }
                 }
@@ -278,6 +290,7 @@ impl VM {
                     function_name: name.clone(),
                     return_address: self.ip,
                     stack_base: self.stack.len() - arity - 1, // -1 for the function itself
+                    locals: local_env,
                 };
 
                 self.call_stack.push(frame);

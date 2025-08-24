@@ -326,13 +326,12 @@ This project includes comprehensive documentation in the [`docs/`](docs/) folder
 
 ### Current Limitations
 
-- **Recursive Functions**: While function syntax is supported, recursive function calls are not yet properly implemented. The parser and compiler accept recursive function definitions, but the VM's call stack management needs enhancement for proper recursion support.
+- **Standard Library**: Currently limited to basic built-in functions (print, type, math operations, string operations)
 
 ### Planned Features
 
-- [ ] **Recursive Function Support**: Implement proper call stack management in the VM to support recursive function calls
-- [ ] **Advanced Data Types**: Arrays, objects/structs, and other complex data structures
-- [ ] **Standard Library**: Built-in functions for common operations (string manipulation, math functions, I/O)
+- [ ] **Advanced Data Types**: Arrays, objects/structs, and other complex data structures  
+- [ ] **Enhanced Standard Library**: More built-in functions for common operations
 - [ ] **Import/Module System**: Support for organizing code across multiple files
 - [ ] **Error Handling**: Try-catch mechanisms for robust error handling
 - [ ] **Performance Optimizations**: Bytecode optimizations and JIT compilation
@@ -340,10 +339,10 @@ This project includes comprehensive documentation in the [`docs/`](docs/) folder
 
 ### Development TODOs
 
-- [ ] Fix recursive function test in `tests/compiler_vm_tests.rs` once recursion is implemented
 - [ ] Add benchmarking suite for performance testing
-- [ ] Improve error messages with better source location tracking
+- [ ] Improve error messages with better source location tracking  
 - [ ] Add more comprehensive integration tests for edge cases
+- [ ] Implement arrays and object data structures
 
 ## 🤝 Contributing
 

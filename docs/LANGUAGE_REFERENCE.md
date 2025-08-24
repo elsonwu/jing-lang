@@ -96,7 +96,21 @@ Function calls:
 let result = function_name(arg1, arg2);
 ```
 
-> **⚠️ Current Limitation**: Recursive function calls are not yet fully supported. While the syntax is accepted, the VM's call stack management needs enhancement for proper recursion. This is planned for a future release.
+### Recursive Functions
+
+Recursive function calls are fully supported:
+
+```jing
+fn factorial(n) {
+    if (n <= 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
+
+print(factorial(5)); // Output: 120
+```
 
 ## Built-in Functions
 
