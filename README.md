@@ -94,10 +94,22 @@ let message = greet("Jing");
 ```
 
 ### Built-in Functions
+
+#### Core Functions
 ```jing
 print("Hello, World!");           // Output to console
-let length = len("Hello");        // String length
-let text = str(42);              // Convert to string
+```
+
+#### I/O Functions
+```jing
+// File operations
+write_file("hello.txt", "Hello, World!");
+let content = read_file("hello.txt");
+let exists = file_exists("hello.txt");
+
+// Interactive input
+let name = input("What's your name? ");
+let line = readline();            // Read line without prompt
 ```
 
 ## 🔧 Bytecode Instructions
@@ -146,7 +158,9 @@ cargo run examples/hello.jing
 cargo run
 ```
 
-**New to Jing?** Check out the [`GETTING_STARTED.md`](docs/GETTING_STARTED.md) guide for a step-by-step tutorial!
+**New to Jing?** Check out the [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) guide for a step-by-step tutorial!
+
+**Complete Documentation:** Browse the [`docs/`](docs/) folder for comprehensive guides and technical references.
 
 ### Example Programs
 
@@ -310,7 +324,7 @@ This project includes comprehensive documentation in the [`docs/`](docs/) folder
 - **[Language Reference](docs/LANGUAGE_REFERENCE.md)** - Complete syntax and built-ins reference  
 - **[How It Works](docs/HOW_IT_WORKS.md)** - Deep dive into the implementation
 - **[Visual Guide](docs/VISUAL_GUIDE.md)** - Diagrams and visual explanations
-- **[Contributing Guide](docs/CONTRIBUTING.md)** - How to contribute to the project
+- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
 - **[Development Setup](docs/DEVELOPMENT.md)** - Development environment and tools
 
 ## 📚 Learning Resources
@@ -344,9 +358,30 @@ This project includes comprehensive documentation in the [`docs/`](docs/) folder
 - [ ] Add more comprehensive integration tests for edge cases
 - [ ] Implement arrays and object data structures
 
+## 📚 Complete Documentation
+
+### Complete Documentation
+- **[docs/](docs/)** - Complete documentation collection
+- **[docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)** - Step-by-step tutorial for beginners
+- **[docs/LANGUAGE_REFERENCE.md](docs/LANGUAGE_REFERENCE.md)** - Complete language specification and builtin functions
+- **[docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)** - Technical deep dive into implementation
+- **[docs/VISUAL_GUIDE.md](docs/VISUAL_GUIDE.md)** - Visual diagrams and flowcharts
+
+### Development & Contributing
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute (REQUIRED READING)
+- **[docs/DEVELOPMENT_GUIDELINES.md](docs/DEVELOPMENT_GUIDELINES.md)** - **MANDATORY** development standards
+- **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)** - Development environment setup
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and changes
+
 ## 🤝 Contributing
 
-This is a learning project! Feel free to:
+**Want to contribute?** 
+
+1. **MUST READ**: [docs/DEVELOPMENT_GUIDELINES.md](docs/DEVELOPMENT_GUIDELINES.md) - Our mandatory development standards
+2. **Follow**: [CONTRIBUTING.md](CONTRIBUTING.md) - Step-by-step contribution guide
+3. **Setup**: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) - Development environment
+
+This is a learning project with professional development standards! We welcome contributions that:
 
 - Add new language features
 - Improve error messages

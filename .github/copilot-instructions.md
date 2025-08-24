@@ -4,14 +4,70 @@
 
 Jing is a simple toy programming language implemented in Rust with a complete compilation pipeline: lexer → parser → compiler → virtual machine. This is an educational project designed to demonstrate language implementation concepts with clean, well-documented code.
 
-## Architecture & Design Patterns
+## 🚨 CRITICAL RULES - NEVER FORGET THESE
 
-### Core Pipeline
+### 1. Documentation Organization Rules
+- **Technical documentation goes in `docs/` folder** - Implementation guides, language references, etc.
+- **GitHub/Release automation files stay in root** - CONTRIBUTING.md, CHANGELOG.md (required by tools)
+- `docs/` folder contains: DEVELOPMENT_GUIDELINES.md, technical documentation, etc.
+- Root contains: README.md, CONTRIBUTING.md, CHANGELOG.md (for GitHub/release-please)
+- README.md in root should reference docs/ with proper links
+- Only ONE README.md in project root - use INDEX.md for subdirectory documentation
+- When creating new docs, ALWAYS put them in docs/ folder first
+
+### 2. Mandatory Development Standards
+**CRITICAL**: All development must follow [docs/DEVELOPMENT_GUIDELINES.md](../docs/DEVELOPMENT_GUIDELINES.md)
+
+#### Documentation-First Development (NON-NEGOTIABLE)
+- **UPDATE DOCUMENTATION BEFORE OR WITH EVERY CHANGE**
+- New features require documentation updates in README.md, docs/LANGUAGE_REFERENCE.md, and examples/
+- All API changes must update relevant reference documentation
+- Every new builtin function needs help text and usage examples
+- All new capabilities must be documented in CHANGELOG.md
+
+#### Quality Gates (ALL MUST PASS BEFORE COMMITS)
+```bash
+cargo fmt     # Code formatting - MANDATORY
+cargo clippy  # Linting - MANDATORY  
+cargo build   # Compilation - MANDATORY
+cargo test    # All tests - MANDATORY
+```
+
+#### Testing Requirements (NON-NEGOTIABLE)
+- Write tests for ALL new features and bug fixes
+- Add both unit tests and integration tests
+- Test edge cases and error conditions
+- Maintain comprehensive test coverage
+- Update tests when implementation changes
+
+#### Conventional Commits (MANDATORY)
+All commits MUST follow conventional commit format:
+```
+<type>(scope): <description>
+
+Examples:
+feat(io): add file I/O builtin functions
+fix(parser): handle empty function parameters
+docs(readme): update I/O capabilities section
+test(vm): add recursive function tests
+```
+
+### 3. Architecture Patterns (FOLLOW EXACTLY)
+
+#### Current Implementation Status
+- ✅ **79 tests passing** including I/O functions and recursive functions
+- ✅ Recursive function support with proper local scope management
+- ✅ File I/O functions: read_file(), write_file(), file_exists()
+- ✅ Interactive I/O: input(), readline()
+- ✅ Modular builtin system with trait-based architecture
+- ✅ Pre-commit hooks enforcing quality gates
+
+#### Core Pipeline Pattern
 ```
 Source Code → Lexer → Parser → Compiler → Bytecode → Virtual Machine → Output
 ```
 
-### Key Components
+#### Key Components Architecture
 
 1. **Lexer** (`src/lexer.rs`)
    - Tokenizes source code into structured tokens
@@ -34,162 +90,176 @@ Source Code → Lexer → Parser → Compiler → Bytecode → Virtual Machine �
 4. **Virtual Machine** (`src/vm.rs`)
    - **Pattern**: Stack-based VM with instruction pointer (IP)
    - Executes bytecode with persistent global environment
-   - Manages call frames for function calls and recursion
+   - Manages call frames for function calls and recursion (IMPLEMENTED)
    - Includes REPL functionality for interactive sessions
+   - **IMPORTANT**: Local scope management via CallFrame.locals for recursion
 
-5. **Value System** (`src/value.rs`)
-   - **Pattern**: Tagged union for dynamic typing
-   - Four core types: `Number(f64)`, `String(String)`, `Bool(bool)`, `Nil`
-   - Runtime type checking with operation-specific error handling
-   - Environment for variable storage with scope chain
+5. **Builtin System** (`src/builtins/`)
+   - **Pattern**: Trait-based modular system using BuiltinFunction trait
+   - Central registry in `src/registry/` for function registration
+   - Categories: core, math, string, io
+   - **CRITICAL**: All new functions MUST follow this pattern
+   - **I/O Functions Available**: read_file, write_file, file_exists, input, readline
 
-6. **Error Handling** (`src/error.rs`)
-   - **Pattern**: Result-based error propagation with `JingResult<T>`
-   - Comprehensive error types: syntax, runtime, type, undefined variable
-   - Position-aware error reporting with line/column information
+### 4. Current Language Features (IMPLEMENTED)
 
-## Code Conventions
+#### Core Language
+- Variables: `let x = 42;`
+- Arithmetic: `+`, `-`, `*`, `/`, `%`
+- Comparisons: `==`, `!=`, `<`, `<=`, `>`, `>=`
+- Logic: `&&`, `||`, `!`
+- Control Flow: `if/else`, `while`
+- Functions: `fn name(params) { body }` 
+- **Recursive Functions**: ✅ Fully supported with proper scoping
 
-### Rust Patterns
+#### Builtin Functions (CURRENT)
+- **Core**: `print(value)`
+- **I/O**: `read_file(path)`, `write_file(path, content)`, `file_exists(path)`, `input(prompt)`, `readline()`
+- **Math**: `sqrt()`, `abs()`, `max()`, `min()`  
+- **String**: `len()`, `upper()`, `lower()`, `reverse()`
+
+### 5. Code Patterns (ALWAYS USE THESE)
+
+#### Rust Conventions
 - Use `Result<T, JingError>` aliased as `JingResult<T>` for all fallible operations
-- Prefer `match` over `if let` for enum handling when exhaustive matching adds clarity
-- Use `Vec<T>` for dynamic collections, `HashMap<String, T>` for string-keyed maps
+- Use `jing::init()` in tests to initialize builtin functions
 - Follow Rust naming: `snake_case` for functions/variables, `PascalCase` for types
 
-### Error Handling Philosophy
+#### Error Handling Philosophy
 - **Fail Fast**: Return errors immediately rather than propagating invalid state
 - **Context Preservation**: Include position information (line/column) in errors
 - **User-Friendly Messages**: Error messages should be clear and actionable
 - **No Panics**: Use `Result` types instead of `panic!` for recoverable errors
 
-### Testing Strategy
-- **Unit Tests**: Each module has embedded `#[cfg(test)]` tests for core functionality
-- **Integration Tests**: The `tests/` directory contains end-to-end pipeline tests
-- **Property Testing**: Test edge cases like empty input, boundary values, malformed syntax
-- **Coverage Focus**: Prioritize error paths and edge cases alongside happy paths
-
-## Implementation Guidelines
-
-### When Adding New Features
-
-1. **Language Features**: Follow the pipeline pattern
-   - Add tokens to `lexer.rs` with appropriate `Token` variants
-   - Add AST nodes to `parser.rs` with corresponding `Stmt`/`Expr` variants
-   - Add compilation logic to `compiler.rs` with new `OpCode` instructions
-   - Implement execution in `vm.rs` with stack manipulation
-
-2. **Value Types**: Extend the type system carefully
-   - Add variants to `Value` enum in `value.rs`
-   - Implement type checking in relevant operations
-   - Update error handling for type mismatches
-   - Add conversion methods and display formatting
-
-3. **Error Cases**: Comprehensive error handling
-   - Define specific error variants in `JingError` enum
-   - Include position information where applicable
-   - Write tests that verify error conditions
-   - Ensure error messages are helpful for debugging
-
-### API Compatibility Notes
-
-**Critical**: Several comprehensive integration test files were created but have API compatibility issues that require attention:
-
-- `vm.run()` is **private** - use `vm.interpret(chunk)` instead  
-- `compiler.compile()` expects `Vec<Stmt>` not `&Vec<Stmt>`
-- Integration tests in `tests/` directory need API fixes before they can run
-- Currently CI runs only embedded unit tests (10 tests) to avoid compilation errors
-
-**Current Status**: 
-- ✅ Core library compiles and passes unit tests
-- ✅ 10 embedded unit tests pass (lexer, parser, compiler, VM)
-- ⚠️ Integration tests need API signature fixes
-- ✅ Formatting and basic linting pass
-
-**Correct Pattern**:
+#### Testing Patterns
 ```rust
-let mut vm = VM::new();
-vm.interpret(chunk)?; // Not vm.run(&chunk)
-
-let mut compiler = Compiler::new();
-let chunk = compiler.compile(statements)?; // Not compile(&statements)
+// Integration test pattern - ALWAYS call jing::init() first
+#[test]
+fn test_feature() {
+    jing::init(); // CRITICAL: Initialize builtins
+    
+    let mut lexer = Lexer::new(code);
+    let tokens = lexer.tokenize()?;
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse()?;
+    let mut compiler = Compiler::new();
+    let chunk = compiler.compile(statements)?;
+    let mut vm = VM::new();
+    vm.interpret(chunk)?; // NOT vm.run()
+}
 ```
 
-### Testing Best Practices
+### 6. Implementation Guidelines
 
-1. **Compilation Pipeline Tests**:
-   ```rust
-   // Full pipeline test pattern
-   let mut lexer = Lexer::new(input);
-   let tokens = lexer.tokenize()?;
-   let mut parser = Parser::new(tokens);
-   let statements = parser.parse()?;
-   let mut compiler = Compiler::new();
-   let chunk = compiler.compile(statements)?;
-   let mut vm = VM::new();
-   vm.interpret(chunk)?;
-   ```
+#### When Adding New Language Features
+1. **FIRST**: Update docs/LANGUAGE_REFERENCE.md with the feature specification
+2. Add tokens to `lexer.rs` with appropriate `Token` variants
+3. Add AST nodes to `parser.rs` with corresponding `Stmt`/`Expr` variants
+4. Add compilation logic to `compiler.rs` with new `OpCode` instructions
+5. Implement execution in `vm.rs` with stack manipulation
+6. Write comprehensive tests (unit + integration)
+7. Add examples in `examples/` directory
+8. Update README.md if it's a major feature
 
-2. **Error Testing**:
-   ```rust
-   // Test error conditions
-   let result = operation_that_should_fail();
-   assert!(result.is_err());
-   assert_matches!(result.unwrap_err(), JingError::TypeError(_));
-   ```
+#### When Adding New Builtin Functions
+1. **FIRST**: Update docs/LANGUAGE_REFERENCE.md with function specification
+2. Implement BuiltinFunction trait in appropriate `src/builtins/*.rs` file
+3. Register in `src/builtins/mod.rs::init_builtins()`
+4. Write tests in `tests/` directory
+5. Add usage examples in `examples/` directory
+6. Update help text with clear description
 
-3. **Value Testing**:
-   ```rust
-   // Test value equality with proper types
-   assert_eq!(result, Value::Number(42.0));
-   assert_eq!(result, Value::String("hello".to_string()));
-   ```
+### 7. Development Workflow Enforcement
 
-## Development Workflow
+#### Pre-Commit Checklist (USE AS TEMPLATE)
+```bash
+# MANDATORY before every commit:
+cargo fmt      # Fix formatting
+cargo clippy   # Fix linting issues  
+cargo build    # Ensure compilation
+cargo test     # Verify all tests pass
 
-### Adding New Syntax
-1. Update lexer with new tokens
-2. Extend parser grammar rules
-3. Add AST node types
-4. Implement compilation logic
-5. Add VM execution support
-6. Write comprehensive tests
-7. Update documentation
+# Documentation updates:
+# - docs/LANGUAGE_REFERENCE.md (for new features)
+# - README.md (for major features)
+# - CHANGELOG.md (for user-facing changes)
+# - examples/ (for new capabilities)
 
-### Debugging Tips
-- Use `println!` debugging in VM to trace execution
-- Print AST structure after parsing to verify correctness
-- Examine generated bytecode to understand compilation issues
-- Check stack state during VM execution for runtime problems
+# Commit with conventional format:
+git commit -m "feat(scope): description"
+```
 
-### Common Pitfalls
-- **Stack Underflow**: Always ensure stack has enough values before popping
-- **Scope Issues**: Track variable scope depth correctly in compiler
-- **Jump Patching**: Forward jumps need proper address resolution
-- **Memory Safety**: Rust's ownership system prevents most memory issues, but be careful with indices
+#### File Organization (MAINTAIN EXACTLY)
+```
+src/
+├── main.rs              # Entry point and REPL
+├── lib.rs              # Public API exports and jing::init()
+├── lexer.rs            # Tokenization
+├── parser.rs           # AST construction
+├── compiler.rs         # Bytecode generation  
+├── vm.rs               # Virtual machine with CallFrame recursion
+├── value.rs            # Value types and operations
+├── error.rs            # Error handling
+├── features/mod.rs     # BuiltinFunction trait
+├── registry/mod.rs     # Function registration system
+└── builtins/
+    ├── mod.rs          # init_builtins() and registration
+    ├── core.rs         # print, type functions
+    ├── math.rs         # Math functions
+    ├── string.rs       # String functions
+    └── io.rs           # I/O functions (NEW)
 
-## File Organization
+docs/
+├── DEVELOPMENT_GUIDELINES.md # MANDATORY standards
+├── DEVELOPMENT.md      # Development setup
+├── GETTING_STARTED.md  # Beginner tutorial
+├── LANGUAGE_REFERENCE.md # Complete spec with I/O functions
+├── HOW_IT_WORKS.md     # Implementation deep dive
+├── VISUAL_GUIDE.md     # Diagrams
+└── IO_IMPLEMENTATION_SUMMARY.md # I/O details
 
-- `src/main.rs`: CLI entry point and REPL implementation
-- `src/lib.rs`: Public API exports and module declarations  
-- `src/*.rs`: Core implementation modules (lexer, parser, compiler, vm, value, error)
-- `tests/*.rs`: Integration test suites organized by functionality
-- `examples/*.jing`: Example programs demonstrating language features
-- `*.md`: Documentation (README, HOW_IT_WORKS, VISUAL_GUIDE)
+examples/
+├── README.md           # Example documentation
+├── hello.jing          # Basic example
+├── recursive.jing      # Recursive functions demo
+├── file_io.jing        # I/O operations demo
+└── [other examples]
+```
 
-## Educational Resources
+## 8. NEVER FORGET THESE PATTERNS
 
-The codebase includes excellent learning materials:
-- `docs/HOW_IT_WORKS.md`: Step-by-step explanation of language implementation
-- `docs/VISUAL_GUIDE.md`: Diagrams showing compilation pipeline
-- Embedded tests demonstrate usage patterns
-- Clear separation of concerns makes each component understandable
+### Documentation Creation
+- ✅ Create new docs in `docs/` folder
+- ✅ Update README.md to reference new docs
+- ❌ Never create .md files in project root (except README.md)
+- ❌ Never create multiple README.md files - use INDEX.md for subdirectories
 
-## Performance Considerations
+### Testing New Features  
+- ✅ Call `jing::init()` before running any Jing code in tests
+- ✅ Use `vm.interpret(chunk)` not `vm.run()`
+- ✅ Test both success and error cases
+- ❌ Never skip writing tests
 
-This is an educational implementation prioritizing clarity over performance:
-- No optimizations implemented (intentionally simple)
-- Stack-based VM (easier to understand than register-based)
-- Single-pass compilation (no multi-phase optimization)
-- Runtime type checking (no static analysis)
+### Builtin Functions
+- ✅ Implement BuiltinFunction trait
+- ✅ Register in init_builtins()
+- ✅ Include help text
+- ✅ Write comprehensive tests
+- ❌ Never add functions without following the trait pattern
 
-When suggesting improvements, maintain educational value and code clarity as primary goals.
+### Quality Standards
+- ✅ Update documentation WITH every change
+- ✅ Run all quality gates before commits
+- ✅ Use conventional commit messages
+- ❌ Never commit without passing all quality gates
+- ❌ Never add features without updating docs
+
+## Educational Philosophy
+
+This is an educational implementation prioritizing:
+- **Clarity over Performance**: Code should be easy to understand
+- **Comprehensive Documentation**: Every feature must be well-documented
+- **Professional Standards**: Development practices should be exemplary
+- **Modular Architecture**: Easy to extend and modify
+
+**When suggesting improvements, ALWAYS maintain educational value and code clarity as primary goals while following these mandatory development standards.**

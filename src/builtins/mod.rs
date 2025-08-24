@@ -33,6 +33,9 @@ pub fn init_builtins() {
     // I/O functions
     register_builtin(Arc::new(io::ReadLineFunction));
     register_builtin(Arc::new(io::InputFunction));
+    register_builtin(Arc::new(io::ReadFileFunction));
+    register_builtin(Arc::new(io::WriteFileFunction));
+    register_builtin(Arc::new(io::FileExistsFunction));
 }
 
 /// Get all registered builtin function names
