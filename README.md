@@ -146,7 +146,7 @@ cargo run examples/hello.jing
 cargo run
 ```
 
-**New to Jing?** Check out the [`GETTING_STARTED.md`](GETTING_STARTED.md) guide for a step-by-step tutorial!
+**New to Jing?** Check out the [`GETTING_STARTED.md`](docs/GETTING_STARTED.md) guide for a step-by-step tutorial!
 
 ### Example Programs
 
@@ -187,42 +187,92 @@ while i <= 100 {
 
 ## 🔧 Extending Jing
 
-The modular design makes it easy to extend Jing:
+Jing features a **modular, plugin-like architecture** that makes extending the language incredibly easy:
+
+### Adding New Built-in Functions
+
+The new modular system allows adding functions without touching core files:
+
+1. **Implement the BuiltinFunction trait**:
+
+```rust
+use crate::features::BuiltinFunction;
+use crate::value::Value;
+use crate::error::{JingError, JingResult};
+
+#[derive(Debug)]
+pub struct MyFunction;
+
+impl BuiltinFunction for MyFunction {
+    fn name(&self) -> &str { "my_function" }
+    fn arity(&self) -> usize { 1 }
+    
+    fn call(&self, args: Vec<Value>) -> JingResult<Value> {
+        // Your implementation here
+        Ok(Value::Number(42.0))
+    }
+    
+    fn help(&self) -> &str {
+        "my_function(arg) - Description of what it does"
+    }
+}
+```
+
+2. **Register it in the appropriate builtin module** (e.g., `src/builtins/math.rs`, `src/builtins/string.rs`):
+
+```rust
+// In src/builtins/mod.rs
+register_builtin(Arc::new(math::MyFunction));
+```
+
+3. **Done!** Your function is now available in the language.
 
 ### Adding New Data Types
+
 1. Extend the `Value` enum in `value.rs`
 2. Update comparison and conversion functions
 3. Add new bytecode instructions if needed
 
-### Adding New Operators
-1. Add tokens to the lexer
-2. Update the parser with precedence rules
-3. Add compilation logic
-4. Implement VM instruction
+### Current Built-in Function Categories
 
-### Adding New Built-in Functions
-1. Add function name to the compiler's built-ins
-2. Implement the function in the VM
-3. Update documentation
+- **Core**: `print()`, `type()`
+- **Math**: `sqrt()`, `abs()`, `max()`, `min()`
+- **String**: `len()`, `upper()`, `lower()`, `reverse()`
+- **I/O**: `readline()`, `input()`
 
-### Adding New Control Structures
-1. Add keywords to the lexer
-2. Update parser grammar
-3. Add compilation logic with jump instructions
-4. Test with examples
+*The modular design makes adding new categories (like JSON, HTTP, file I/O) straightforward!*
 
 ## 📁 Project Structure
 
-```
+```text
 src/
 ├── main.rs          # Entry point and REPL
+├── lib.rs           # Public API and initialization
 ├── lexer.rs         # Tokenization
 ├── parser.rs        # AST construction
 ├── compiler.rs      # Bytecode generation
 ├── vm.rs           # Virtual machine
 ├── value.rs        # Value types and operations
 ├── error.rs        # Error handling
-└── lib.rs          # Library exports
+├── features/        # Trait definitions for extensibility
+│   └── mod.rs      # BuiltinFunction trait
+├── registry/        # Global function registry
+│   └── mod.rs      # Thread-safe registration system
+└── builtins/        # Built-in function implementations
+    ├── mod.rs      # Initialization and registration
+    ├── core.rs     # Core functions (print, type)
+    ├── math.rs     # Math functions (sqrt, abs, etc.)
+    ├── string.rs   # String functions (len, upper, etc.)
+    └── io.rs       # I/O functions (readline, input)
+
+docs/
+├── README.md            # Documentation index
+├── GETTING_STARTED.md   # Beginner's tutorial
+├── LANGUAGE_REFERENCE.md # Complete language spec
+├── HOW_IT_WORKS.md      # Implementation deep dive  
+├── VISUAL_GUIDE.md      # Diagrams and visual guides
+├── CONTRIBUTING.md      # How to contribute
+└── DEVELOPMENT.md       # Development setup guide
 
 examples/
 ├── hello.jing        # Hello world
@@ -231,10 +281,12 @@ examples/
 └── calculator.jing   # Simple calculator
 
 tests/
-├── lexer_tests.rs  # Lexer unit tests
-├── parser_tests.rs # Parser unit tests
-├── vm_tests.rs     # VM integration tests
-└── examples_tests.rs # Example program tests
+├── lexer_tests.rs       # Lexer unit tests
+├── parser_tests.rs      # Parser unit tests
+├── compiler_vm_tests.rs # VM integration tests
+├── value_tests.rs       # Value system tests
+├── error_tests.rs       # Error handling tests
+└── integration_tests.rs # End-to-end tests
 ```
 
 ## 🧪 Testing
@@ -250,14 +302,25 @@ cargo test lexer_tests
 cargo test -- --nocapture
 ```
 
+## 📚 Documentation
+
+This project includes comprehensive documentation in the [`docs/`](docs/) folder:
+
+- **[Getting Started Guide](docs/GETTING_STARTED.md)** - Your first steps with Jing
+- **[Language Reference](docs/LANGUAGE_REFERENCE.md)** - Complete syntax and built-ins reference  
+- **[How It Works](docs/HOW_IT_WORKS.md)** - Deep dive into the implementation
+- **[Visual Guide](docs/VISUAL_GUIDE.md)** - Diagrams and visual explanations
+- **[Contributing Guide](docs/CONTRIBUTING.md)** - How to contribute to the project
+- **[Development Setup](docs/DEVELOPMENT.md)** - Development environment and tools
+
 ## 📚 Learning Resources
 
 - **Language Implementation**: Study `compiler.rs` to see how high-level constructs are translated to bytecode
 - **VM Architecture**: Examine `vm.rs` to understand stack-based execution
 - **Parser Design**: Look at `parser.rs` for recursive descent parsing techniques
 - **Error Handling**: See `error.rs` for comprehensive error reporting
-- **Beginner's Guide**: Read [`HOW_IT_WORKS.md`](HOW_IT_WORKS.md) for a detailed explanation of how the language implementation works from scratch
-- **Visual Guide**: Check out [`VISUAL_GUIDE.md`](VISUAL_GUIDE.md) for diagrams and visual explanations of the compilation pipeline
+- **Beginner's Guide**: Read [`HOW_IT_WORKS.md`](docs/HOW_IT_WORKS.md) for a detailed explanation of how the language implementation works from scratch
+- **Visual Guide**: Check out [`VISUAL_GUIDE.md`](docs/VISUAL_GUIDE.md) for diagrams and visual explanations of the compilation pipeline
 
 ## 🚧 Known Limitations & TODO
 
@@ -299,4 +362,4 @@ MIT License - feel free to use this for learning and experimentation!
 
 ---
 
-*Happy coding with Jing! 🚀*
+Happy coding with Jing! 🚀

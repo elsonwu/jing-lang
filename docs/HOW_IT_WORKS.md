@@ -316,22 +316,120 @@ This design is **educational** and **extensible**:
 
 ## How to Extend Jing
 
-Want to add a new feature? Here's the process:
+Jing now features a **modular, plugin-like architecture** that makes extending the language incredibly easy without touching core files!
 
-### Example: Adding a `for` loop
+### The Modular System
+
+The language is organized around three key concepts:
+
+1. **Features** (`src/features/`): Trait definitions that define what language features can do
+2. **Registry** (`src/registry/`): A thread-safe global system that stores and manages all extensions  
+3. **Builtins** (`src/builtins/`): Organized categories of built-in functions
+
+### Example: Adding a New Built-in Function
+
+Want to add a `factorial()` function? Here's how easy it is:
+
+1. **Create the function** (in `src/builtins/math.rs`):
+```rust
+#[derive(Debug)]
+pub struct FactorialFunction;
+
+impl BuiltinFunction for FactorialFunction {
+    fn name(&self) -> &str { "factorial" }
+    fn arity(&self) -> usize { 1 }
+    
+    fn call(&self, args: Vec<Value>) -> JingResult<Value> {
+        match &args[0] {
+            Value::Number(n) => {
+                if *n < 0.0 { return Err(JingError::runtime_error("Factorial of negative number")); }
+                let mut result = 1.0;
+                for i in 1..=(*n as u64) {
+                    result *= i as f64;
+                }
+                Ok(Value::Number(result))
+            }
+            _ => Err(JingError::runtime_error("factorial() expects a number")),
+        }
+    }
+    
+    fn help(&self) -> &str {
+        "factorial(n) - Calculate factorial of n"
+    }
+}
+```
+
+2. **Register it** (in `src/builtins/mod.rs`):
+```rust
+register_builtin(Arc::new(math::FactorialFunction));
+```
+
+3. **Done!** Your function is now available:
+```jing
+print(factorial(5));  // Output: 120
+```
+
+### The Registry System
+
+The registry uses **thread-safe storage** and **dynamic dispatch** to manage all language extensions:
+
+```rust
+// Thread-safe global registry
+static BUILTIN_REGISTRY: Mutex<Option<HashMap<String, Arc<dyn BuiltinFunction>>>> = Mutex::new(None);
+
+// Easy registration  
+pub fn register_builtin(builtin: Arc<dyn BuiltinFunction>) {
+    // Safely add to global registry
+}
+
+// VM integration
+pub fn get_builtin(name: &str) -> Option<Arc<dyn BuiltinFunction>> {
+    // Retrieve function for execution
+}
+```
+
+### Current Built-in Categories
+
+- **Core** (`core.rs`): `print()`, `type()`
+- **Math** (`math.rs`): `sqrt()`, `abs()`, `max()`, `min()`
+- **String** (`string.rs`): `len()`, `upper()`, `lower()`, `reverse()`
+- **I/O** (`io.rs`): `readline()`, `input()`
+
+### Benefits of This Architecture
+
+1. **Zero Core Changes**: Add features without modifying lexer/parser/compiler/VM
+2. **Type Safety**: Rust's type system prevents runtime errors
+3. **Easy Testing**: Each function can be unit tested independently
+4. **Discoverability**: All functions include built-in help text
+5. **Thread Safety**: Safe to use in multi-threaded environments
+
+### Extending to New Categories
+
+Want to add JSON support? File I/O? HTTP requests? Just create a new module:
+
+```rust
+// src/builtins/json.rs
+#[derive(Debug)]
+pub struct ParseJsonFunction;
+
+impl BuiltinFunction for ParseJsonFunction {
+    fn name(&self) -> &str { "parse_json" }
+    // ... implement the trait
+}
+
+// Register it
+register_builtin(Arc::new(json::ParseJsonFunction));
+```
+
+### Example: Adding a `for` loop (Traditional Approach)
+
+For language syntax features, you still follow the traditional compiler pipeline:
 
 1. **Lexer**: Add `For` token type
 2. **Parser**: Add `ForStmt` AST node and parsing logic
 3. **Compiler**: Generate bytecode for loop (similar to while)
 4. **VM**: No changes needed (uses existing jump instructions)
 5. **Tests**: Add test cases
-
-### Example: Adding a `%` operator (already done!)
-
-1. **Lexer**: Add `Percent` token when seeing '%'
-2. **Parser**: Add to operator precedence rules  
-3. **Compiler**: Generate `MODULO` instruction
-4. **VM**: Implement modulo operation in `Value::modulo()`
 
 ## Debugging Tips
 

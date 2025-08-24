@@ -1,9 +1,11 @@
 use crate::error::{JingError, JingResult};
+use crate::features::BuiltinFunction;
 use std::collections::HashMap;
 use std::fmt;
+use std::sync::Arc;
 
 /// Values in Jing are dynamically typed
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub enum Value {
     Nil,
     Bool(bool),
@@ -13,6 +15,10 @@ pub enum Value {
         name: String,
         arity: usize,
         chunk_start: usize,
+    },
+    BuiltinFunction {
+        name: String,
+        function: Arc<dyn BuiltinFunction>,
     },
 }
 
@@ -31,6 +37,9 @@ impl fmt::Display for Value {
             Value::String(s) => write!(f, "{}", s),
             Value::Function { name, arity, .. } => {
                 write!(f, "<fn {}({} args)>", name, arity)
+            }
+            Value::BuiltinFunction { name, function } => {
+                write!(f, "<builtin {}({} args)>", name, function.arity())
             }
         }
     }
@@ -59,6 +68,7 @@ impl Value {
             Value::Number(_) => "number",
             Value::String(_) => "string",
             Value::Function { .. } => "function",
+            Value::BuiltinFunction { .. } => "builtin_function",
         }
     }
 
@@ -266,5 +276,34 @@ impl Environment {
             "Undefined variable '{}'",
             name
         )))
+    }
+}
+
+// Implement PartialEq manually because BuiltinFunction can't derive it
+impl PartialEq for Value {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Value::Nil, Value::Nil) => true,
+            (Value::Bool(a), Value::Bool(b)) => a == b,
+            (Value::Number(a), Value::Number(b)) => a == b,
+            (Value::String(a), Value::String(b)) => a == b,
+            (
+                Value::Function {
+                    name: n1,
+                    arity: a1,
+                    chunk_start: c1,
+                },
+                Value::Function {
+                    name: n2,
+                    arity: a2,
+                    chunk_start: c2,
+                },
+            ) => n1 == n2 && a1 == a2 && c1 == c2,
+            (Value::BuiltinFunction { name: n1, .. }, Value::BuiltinFunction { name: n2, .. }) => {
+                // Compare builtin functions by name only
+                n1 == n2
+            }
+            _ => false,
+        }
     }
 }

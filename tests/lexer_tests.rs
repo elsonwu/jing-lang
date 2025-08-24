@@ -1,4 +1,4 @@
-use jing::*;
+use jing::lexer::{Lexer, Token, TokenType};
 
 #[test]
 fn test_lexer_keywords() {
@@ -80,7 +80,7 @@ fn test_lexer_delimiters() {
 
 #[test]
 fn test_lexer_numbers() {
-    let input = "42 3.14 0 0.0 123.456";
+    let input = "42 2.5 0 0.0 123.456";
     let mut lexer = Lexer::new(input);
     let tokens = lexer.tokenize().unwrap();
 
@@ -90,7 +90,7 @@ fn test_lexer_numbers() {
     }
 
     match &tokens[1].token_type {
-        TokenType::Number(n) => assert_eq!(*n, 3.14),
+        TokenType::Number(n) => assert_eq!(*n, 2.5),
         _ => panic!("Expected Number token"),
     }
 

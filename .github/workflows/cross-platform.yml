@@ -2,10 +2,10 @@ name: Cross Platform Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop, 'feat/**', 'fix/**' ]
     tags: [ 'v*' ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
   build:
@@ -53,6 +53,7 @@ jobs:
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
       with:
         name: jing-${{ matrix.target }}
         path: target/${{ matrix.target }}/release/${{ matrix.binary_name }}

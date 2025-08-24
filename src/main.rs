@@ -1,9 +1,13 @@
+use jing::vm::REPL;
 use jing::*;
 use std::env;
 use std::fs;
 use std::process;
 
 fn main() {
+    // Initialize the modular language system
+    jing::init();
+
     let args: Vec<String> = env::args().collect();
 
     match args.len() {
