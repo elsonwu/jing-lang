@@ -1,0 +1,64 @@
+// Comprehensive File I/O and Interactive Input Demo
+print("=== Jing Language I/O Capabilities Demo ===");
+
+// Interactive input demonstration
+let name = input("What's your name? ");
+let age = input("What's your age? ");
+
+print("Nice to meet you, " + name + "!");
+
+// Create personalized content
+let personal_info = "Name: " + name + "\nAge: " + age + "\nGenerated on: " + "2025-08-24";
+
+// File I/O demonstration
+let filename = "user_profile.txt";
+
+print("\n=== File Operations ===");
+
+// Write to file
+write_file(filename, personal_info);
+print("✅ Profile saved to " + filename);
+
+// Check if file exists
+if (file_exists(filename)) {
+    print("✅ File exists check passed");
+    
+    // Read and display content
+    let content = read_file(filename);
+    print("\n📖 Profile content:");
+    print(content);
+} else {
+    print("❌ File exists check failed");
+}
+
+// Demonstrate error handling for non-existent file
+print("\n=== Error Handling Demo ===");
+if (file_exists("nonexistent.txt")) {
+    print("This shouldn't happen!");
+} else {
+    print("✅ Correctly detected non-existent file");
+}
+
+// Interactive file operations
+let should_create_log = input("\nWould you like to create a log file? (y/n): ");
+if (should_create_log == "y") {
+    let log_message = input("Enter a log message: ");
+    let log_content = "[LOG] " + log_message + "\nTimestamp: 2025-08-24\nUser: " + name;
+    
+    write_file("activity.log", log_content);
+    print("✅ Log file created successfully");
+    
+    if (file_exists("activity.log")) {
+        print("📄 Log file contents:");
+        print(read_file("activity.log"));
+    }
+}
+
+print("\n=== Demo Completed ===");
+print("Files created during this demo:");
+if (file_exists("user_profile.txt")) {
+    print("- user_profile.txt");
+}
+if (file_exists("activity.log")) {
+    print("- activity.log");
+}

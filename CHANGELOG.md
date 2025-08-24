@@ -1,5 +1,45 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- **File I/O Functions**: Complete file system operations support
+  - `read_file(path)` - Read entire file contents as string
+  - `write_file(path, content)` - Write string content to file
+  - `file_exists(path)` - Check if file or directory exists
+- **Interactive Input Functions**: Enhanced user interaction capabilities
+  - `input(prompt)` - Display prompt and read user input
+  - `readline()` - Read line from standard input without prompt
+- **Recursive Function Support**: Functions can now call themselves recursively
+  - Proper local scope management for function parameters
+  - Stack-based call frames for recursive calls
+  - Examples: factorial, fibonacci functions
+- **Development Guidelines**: Comprehensive development standards ([docs/DEVELOPMENT_GUIDELINES.md](docs/DEVELOPMENT_GUIDELINES.md))
+  - Documentation-first development requirements
+  - Mandatory quality gates (format, lint, build, test)
+  - Conventional commit message enforcement
+  - Testing requirements and standards
+
+### Changed
+- **Enhanced Testing Suite**: Expanded from 77 to 79+ tests
+  - Added comprehensive I/O function tests with temporary file handling
+  - Added recursive function integration tests
+  - All existing functionality tests still passing
+- **Modular Builtin System**: Improved extensibility
+  - Trait-based builtin function architecture
+  - Central registry for easy function registration
+  - Clear separation between I/O, math, string, and core functions
+- **Documentation Updates**: Complete documentation overhaul
+  - Updated README.md with I/O capabilities
+  - Enhanced LANGUAGE_REFERENCE.md with all builtin functions
+  - Added comprehensive examples and usage patterns
+
+### Technical Details
+- **Architecture**: Maintained clean pipeline pattern (Lexer → Parser → Compiler → VM)
+- **Error Handling**: Comprehensive error messages for file operations and recursive calls
+- **Performance**: Stack-based VM with efficient call frame management
+- **Dependencies**: Added `tempfile` for testing infrastructure
+
 ## 0.1.0 (2025-08-24)
 
 

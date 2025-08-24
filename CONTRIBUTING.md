@@ -6,13 +6,24 @@ Thank you for your interest in contributing to Jing! This guide will help you ge
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feat/my-feature`
-3. Make your changes
-4. Write tests for your changes
-5. Ensure all tests pass: `cargo test`
-6. Format your code: `cargo fmt`
-7. Lint your code: `cargo clippy`
-8. Commit your changes using conventional commits (see below)
-9. Push to your fork and create a pull request
+3. **IMPORTANT**: Read and follow [docs/DEVELOPMENT_GUIDELINES.md](docs/DEVELOPMENT_GUIDELINES.md)
+4. Make your changes following our quality standards:
+   - Update documentation FIRST or WITH your changes
+   - Write comprehensive tests
+   - Ensure all quality gates pass
+5. Use conventional commit messages (see below)
+6. Push to your fork and create a pull request
+
+## ⚠️ Required Reading
+
+**Before making any changes, you MUST read and follow our [Development Guidelines](docs/DEVELOPMENT_GUIDELINES.md).** This document contains mandatory quality standards that all contributions must meet.
+
+### Key Requirements Summary
+- ✅ Update documentation with every feature/change
+- ✅ Write tests for all new functionality  
+- ✅ Pass all quality gates: format, lint, build, test
+- ✅ Use conventional commit messages
+- ✅ Follow the established architecture patterns
 
 ## 📝 Conventional Commits
 

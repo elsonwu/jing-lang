@@ -114,39 +114,64 @@ print(factorial(5)); // Output: 120
 
 ## Built-in Functions
 
-- `print(value)` - Print a value to the console
+### Core Functions
 
-## Comments
+#### `print(value)`
+Print a value to the console.
 
-Single-line comments start with `//`:
-
-```jing
-// This is a comment
-let x = 42; // This is also a comment
-```
-
-## Examples
-
-### Hello World
 ```jing
 print("Hello, World!");
+print(42);
+print(true);
 ```
 
-### Variables and Arithmetic
+### I/O Functions
+
+#### `read_file(path)`
+Read entire file contents as a string.
+
 ```jing
-let a = 10;
-let b = 20;
-let sum = a + b;
-print(sum); // Outputs: 30
+let content = read_file("data.txt");
+print(content);
 ```
 
-### String Operations
+#### `write_file(path, content)`
+Write string content to a file.
+
 ```jing
-let greeting = "Hello, " + "World!";
-print(greeting); // Outputs: Hello, World!
+write_file("output.txt", "Hello from Jing!");
 ```
 
-### Control Flow
+#### `file_exists(path)`
+Check if a file or directory exists.
+
+```jing
+if (file_exists("config.txt")) {
+    let config = read_file("config.txt");
+    print("Config loaded");
+} else {
+    print("Config file not found");
+}
+```
+
+#### `input(prompt)`
+Display a prompt and read user input.
+
+```jing
+let name = input("What's your name? ");
+print("Hello, " + name + "!");
+```
+
+#### `readline()`
+Read a line from standard input without a prompt.
+
+```jing
+print("Enter text:");
+let text = readline();
+print("You entered: " + text);
+```
+
+## Running Jing Programs
 ```jing
 let x = 15;
 if x > 10 {

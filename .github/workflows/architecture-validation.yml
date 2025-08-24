@@ -219,7 +219,7 @@ jobs:
         test -f docs/CONTRIBUTING.md && echo "✅ Contributing guide exists"
         
         # Check for architecture-specific documentation
-        grep -i "modular\|builtin\|registry" docs/README.md && echo "✅ Modular system documented in overview"
+        grep -i "modular\|builtin\|registry" README.md && echo "✅ Modular system documented in main README"
         grep -i "builtin.*function" docs/HOW_IT_WORKS.md && echo "✅ Builtin system explained in guide"
         grep -i "extensib\|modular" docs/CONTRIBUTING.md && echo "✅ Extension guide available"
         
