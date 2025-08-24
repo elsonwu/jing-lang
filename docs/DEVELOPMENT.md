@@ -267,7 +267,7 @@ cargo test integration_tests
 
 ## 📞 Getting Help
 
-- Check the main [README.md](README.md) for project overview
+- Check the main [README.md](../README.md) for project overview
 - Read [HOW_IT_WORKS.md](HOW_IT_WORKS.md) for architecture details
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines
 - Review existing tests for implementation examples

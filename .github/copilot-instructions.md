@@ -179,8 +179,8 @@ let chunk = compiler.compile(statements)?; // Not compile(&statements)
 ## Educational Resources
 
 The codebase includes excellent learning materials:
-- `HOW_IT_WORKS.md`: Step-by-step explanation of language implementation
-- `VISUAL_GUIDE.md`: Diagrams showing compilation pipeline
+- `docs/HOW_IT_WORKS.md`: Step-by-step explanation of language implementation
+- `docs/VISUAL_GUIDE.md`: Diagrams showing compilation pipeline
 - Embedded tests demonstrate usage patterns
 - Clear separation of concerns makes each component understandable
 

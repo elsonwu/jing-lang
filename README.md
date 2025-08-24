@@ -146,7 +146,7 @@ cargo run examples/hello.jing
 cargo run
 ```
 
-**New to Jing?** Check out the [`GETTING_STARTED.md`](GETTING_STARTED.md) guide for a step-by-step tutorial!
+**New to Jing?** Check out the [`GETTING_STARTED.md`](docs/GETTING_STARTED.md) guide for a step-by-step tutorial!
 
 ### Example Programs
 
@@ -265,6 +265,15 @@ src/
     ├── string.rs   # String functions (len, upper, etc.)
     └── io.rs       # I/O functions (readline, input)
 
+docs/
+├── README.md            # Documentation index
+├── GETTING_STARTED.md   # Beginner's tutorial
+├── LANGUAGE_REFERENCE.md # Complete language spec
+├── HOW_IT_WORKS.md      # Implementation deep dive  
+├── VISUAL_GUIDE.md      # Diagrams and visual guides
+├── CONTRIBUTING.md      # How to contribute
+└── DEVELOPMENT.md       # Development setup guide
+
 examples/
 ├── hello.jing        # Hello world
 ├── fibonacci.jing    # Recursive fibonacci
@@ -293,14 +302,25 @@ cargo test lexer_tests
 cargo test -- --nocapture
 ```
 
+## 📚 Documentation
+
+This project includes comprehensive documentation in the [`docs/`](docs/) folder:
+
+- **[Getting Started Guide](docs/GETTING_STARTED.md)** - Your first steps with Jing
+- **[Language Reference](docs/LANGUAGE_REFERENCE.md)** - Complete syntax and built-ins reference  
+- **[How It Works](docs/HOW_IT_WORKS.md)** - Deep dive into the implementation
+- **[Visual Guide](docs/VISUAL_GUIDE.md)** - Diagrams and visual explanations
+- **[Contributing Guide](docs/CONTRIBUTING.md)** - How to contribute to the project
+- **[Development Setup](docs/DEVELOPMENT.md)** - Development environment and tools
+
 ## 📚 Learning Resources
 
 - **Language Implementation**: Study `compiler.rs` to see how high-level constructs are translated to bytecode
 - **VM Architecture**: Examine `vm.rs` to understand stack-based execution
 - **Parser Design**: Look at `parser.rs` for recursive descent parsing techniques
 - **Error Handling**: See `error.rs` for comprehensive error reporting
-- **Beginner's Guide**: Read [`HOW_IT_WORKS.md`](HOW_IT_WORKS.md) for a detailed explanation of how the language implementation works from scratch
-- **Visual Guide**: Check out [`VISUAL_GUIDE.md`](VISUAL_GUIDE.md) for diagrams and visual explanations of the compilation pipeline
+- **Beginner's Guide**: Read [`HOW_IT_WORKS.md`](docs/HOW_IT_WORKS.md) for a detailed explanation of how the language implementation works from scratch
+- **Visual Guide**: Check out [`VISUAL_GUIDE.md`](docs/VISUAL_GUIDE.md) for diagrams and visual explanations of the compilation pipeline
 
 ## 🚧 Known Limitations & TODO
 
@@ -342,4 +362,4 @@ MIT License - feel free to use this for learning and experimentation!
 
 ---
 
-*Happy coding with Jing! 🚀*
+Happy coding with Jing! 🚀
