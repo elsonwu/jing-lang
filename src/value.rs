@@ -287,12 +287,19 @@ impl PartialEq for Value {
             (Value::Bool(a), Value::Bool(b)) => a == b,
             (Value::Number(a), Value::Number(b)) => a == b,
             (Value::String(a), Value::String(b)) => a == b,
-            (Value::Function { name: n1, arity: a1, chunk_start: c1 }, 
-             Value::Function { name: n2, arity: a2, chunk_start: c2 }) => {
-                n1 == n2 && a1 == a2 && c1 == c2
-            }
-            (Value::BuiltinFunction { name: n1, .. }, 
-             Value::BuiltinFunction { name: n2, .. }) => {
+            (
+                Value::Function {
+                    name: n1,
+                    arity: a1,
+                    chunk_start: c1,
+                },
+                Value::Function {
+                    name: n2,
+                    arity: a2,
+                    chunk_start: c2,
+                },
+            ) => n1 == n2 && a1 == a2 && c1 == c2,
+            (Value::BuiltinFunction { name: n1, .. }, Value::BuiltinFunction { name: n2, .. }) => {
                 // Compare builtin functions by name only
                 n1 == n2
             }

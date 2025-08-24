@@ -1,4 +1,4 @@
-use jing::value::{Value, Environment};
+use jing::value::{Environment, Value};
 
 #[test]
 fn test_value_display() {
@@ -6,7 +6,7 @@ fn test_value_display() {
     assert_eq!(format!("{}", Value::Bool(true)), "true");
     assert_eq!(format!("{}", Value::Bool(false)), "false");
     assert_eq!(format!("{}", Value::Number(42.0)), "42");
-    assert_eq!(format!("{}", Value::Number(3.14)), "3.14");
+    assert_eq!(format!("{}", Value::Number(2.5)), "2.5");
     assert_eq!(format!("{}", Value::String("hello".to_string())), "hello");
 
     let func = Value::Function {
@@ -69,7 +69,7 @@ fn test_value_to_string() {
 #[test]
 fn test_value_to_number() {
     assert_eq!(Value::Number(42.0).to_number().unwrap(), 42.0);
-    assert_eq!(Value::String("3.14".to_string()).to_number().unwrap(), 3.14);
+    assert_eq!(Value::String("2.5".to_string()).to_number().unwrap(), 2.5);
     assert_eq!(Value::String("42".to_string()).to_number().unwrap(), 42.0);
 
     // Error cases
@@ -165,8 +165,8 @@ fn test_value_negation() {
     let result = Value::Number(42.0).negate().unwrap();
     assert_eq!(result, Value::Number(-42.0));
 
-    let result = Value::Number(-3.14).negate().unwrap();
-    assert_eq!(result, Value::Number(3.14));
+    let result = Value::Number(-2.5).negate().unwrap();
+    assert_eq!(result, Value::Number(2.5));
 
     // Error cases
     assert!(Value::String("hello".to_string()).negate().is_err());

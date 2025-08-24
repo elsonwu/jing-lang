@@ -1,5 +1,7 @@
-use jing::parser::{Parser, Expr, Stmt, BinaryOperator, UnaryOperator, LogicalOperator, LiteralValue};
 use jing::lexer::Lexer;
+use jing::parser::{
+    BinaryOperator, Expr, LiteralValue, LogicalOperator, Parser, Stmt, UnaryOperator,
+};
 
 #[test]
 fn test_parse_literals() {

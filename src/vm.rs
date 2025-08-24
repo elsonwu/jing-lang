@@ -298,7 +298,9 @@ impl VM {
                 if arity != function.arity() {
                     return Err(JingError::runtime_error(format!(
                         "Builtin function '{}' expects {} arguments, got {}",
-                        name, function.arity(), arity
+                        name,
+                        function.arity(),
+                        arity
                     )));
                 }
 
