@@ -325,7 +325,7 @@ fn test_vm_function_calls() {
 // This test is currently ignored because the VM's call stack management
 // doesn't properly handle recursive calls. The parser and compiler accept
 // the syntax, but the VM needs enhancement to support proper recursion.
-// 
+//
 // When implementing recursion support:
 // 1. Fix call stack overflow issues in VM::interpret()
 // 2. Ensure proper function scope management for recursive calls
