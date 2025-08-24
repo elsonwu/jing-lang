@@ -1,6 +1,6 @@
 //! Core built-in functions
 
-use crate::error::{JingError, JingResult};
+use crate::error::JingResult;
 use crate::features::BuiltinFunction;
 use crate::value::Value;
 
@@ -18,9 +18,12 @@ impl BuiltinFunction for PrintFunction {
     }
 
     fn call(&self, args: Vec<Value>) -> JingResult<Value> {
-        if args.len() != 1 {
-            return Err(JingError::runtime_error("print() takes exactly 1 argument"));
-        }
+        debug_assert_eq!(
+            args.len(),
+            1,
+            "print() takes exactly 1 argument, got {}",
+            args.len()
+        );
 
         println!("{}", args[0]);
         Ok(Value::Nil)
@@ -45,9 +48,12 @@ impl BuiltinFunction for TypeFunction {
     }
 
     fn call(&self, args: Vec<Value>) -> JingResult<Value> {
-        if args.len() != 1 {
-            return Err(JingError::runtime_error("type() takes exactly 1 argument"));
-        }
+        debug_assert_eq!(
+            args.len(),
+            1,
+            "type() takes exactly 1 argument, got {}",
+            args.len()
+        );
 
         let type_name = match &args[0] {
             Value::Number(_) => "number",

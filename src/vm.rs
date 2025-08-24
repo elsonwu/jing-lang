@@ -265,13 +265,10 @@ impl VM {
                 let func_info = self.chunk.functions.get(&name).cloned();
                 if let Some(func_info) = func_info {
                     // Bind arguments to parameter names in global environment
-                    // Arguments are on stack: [arg0, arg1, ..., function]
-                    let stack_len = self.stack.len();
+                    let args = self.get_function_args(arity);
                     for (i, param_name) in func_info.locals.iter().enumerate() {
                         if i < arity {
-                            let arg_index = stack_len - arity - 1 + i; // -1 for function itself
-                            let arg_value = self.stack[arg_index].clone();
-                            self.globals.define(param_name.clone(), arg_value);
+                            self.globals.define(param_name.clone(), args[i].clone());
                         }
                     }
                 }
@@ -304,13 +301,8 @@ impl VM {
                     )));
                 }
 
-                // Collect arguments from the stack
-                let mut args = Vec::new();
-                let stack_len = self.stack.len();
-                for i in 0..arity {
-                    let arg_index = stack_len - arity - 1 + i; // -1 for function itself
-                    args.push(self.stack[arg_index].clone());
-                }
+                // Collect arguments from the stack using helper method
+                let args = self.get_function_args(arity);
 
                 // Call the builtin function
                 let result = function.call(args)?;
@@ -329,6 +321,20 @@ impl VM {
         }
 
         Ok(())
+    }
+
+    /// Extract function arguments from the stack
+    /// Arguments are arranged as: [..., arg0, arg1, ..., argN, function]
+    fn get_function_args(&self, arity: usize) -> Vec<Value> {
+        let stack_len = self.stack.len();
+        let mut args = Vec::with_capacity(arity);
+
+        for i in 0..arity {
+            let arg_index = stack_len - arity - 1 + i; // -1 for function itself
+            args.push(self.stack[arg_index].clone());
+        }
+
+        args
     }
 
     /// Push a value onto the stack
