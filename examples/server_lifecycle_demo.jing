@@ -1,0 +1,57 @@
+// Server Handle Management Demo
+// Shows starting, configuring, and stopping servers with handles
+
+print("=== Server Handle Management Demo ===");
+
+// Start multiple services
+let web_service = start_http_server(8080);
+let api_service = start_http_server(8081);
+let metrics_service = start_http_server(8082);
+
+print("Started services:");
+print("Web service: " + web_service);
+print("API service: " + api_service);
+print("Metrics service: " + metrics_service);
+
+// Configure each service independently
+print("\n=== Configuring Services ===");
+
+// Web service routes
+let web1 = http_register_handler(web_service, "GET", "/", "home_page");
+let web2 = http_register_handler(web_service, "GET", "/about", "about_page");
+print("Web service configured: " + web1 + ", " + web2);
+
+// API service routes
+let api1 = http_register_handler(api_service, "GET", "/api/v1/data", "get_data");
+let api2 = http_register_handler(api_service, "POST", "/api/v1/data", "post_data");
+print("API service configured: " + api1 + ", " + api2);
+
+// Metrics service routes  
+let metrics1 = http_register_handler(metrics_service, "GET", "/metrics", "prometheus_metrics");
+print("Metrics service configured: " + metrics1);
+
+// Show all running services
+print("\n=== All Services Running ===");
+let all_servers = list_http_servers();
+print(all_servers);
+
+// Stop specific services using handles (clean object-oriented approach)
+print("\n=== Stopping Services ===");
+
+let stop1 = stop_http_server(metrics_service);
+print("Stopped metrics service: " + stop1);
+
+let stop2 = stop_http_server(api_service);  
+print("Stopped API service: " + stop2);
+
+let stop3 = stop_http_server(web_service);
+print("Stopped web service: " + stop3);
+
+// Verify all stopped
+print("\n=== Final Status ===");
+let final_servers = list_http_servers();
+print(final_servers);
+
+print("\n✅ Complete server lifecycle management with handles!");
+print("✅ Start servers → Get handles → Configure routes → Stop by handle!");
+print("✅ Object-oriented pattern like modern web frameworks!");

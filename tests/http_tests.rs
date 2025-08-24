@@ -8,28 +8,16 @@ use std::{thread, time::Duration};
 async fn test_http_server_lifecycle() -> JingResult<()> {
     init();
 
-    // Test starting HTTP server
+    // Test complete server lifecycle in single execution
     let code = r#"
-        let result = start_http_server(8080);
-        print(result);
-    "#;
-
-    let mut lexer = Lexer::new(code);
-    let tokens = lexer.tokenize()?;
-    let mut parser = Parser::new(tokens);
-    let statements = parser.parse()?;
-    let mut compiler = Compiler::new();
-    let chunk = compiler.compile(statements)?;
-    let mut vm = VM::new();
-    vm.interpret(chunk)?;
-
-    // Give server time to start
-    thread::sleep(Duration::from_millis(200));
-
-    // Test listing servers
-    let code = r#"
+        let server = start_http_server(8080);
+        print(server);
+        
         let servers = list_http_servers();
         print(servers);
+        
+        let result = stop_http_server(server);
+        print(result);
     "#;
 
     let mut lexer = Lexer::new(code);
@@ -40,14 +28,6 @@ async fn test_http_server_lifecycle() -> JingResult<()> {
     let chunk = compiler.compile(statements)?;
     let mut vm = VM::new();
     vm.interpret(chunk)?;
-
-    // Test stopping server
-    let code = r#"
-        let result = stop_http_server(8080);
-        print(result);
-    "#;
-
-    let mut lexer = Lexer::new(code);
     let tokens = lexer.tokenize()?;
     let mut parser = Parser::new(tokens);
     let statements = parser.parse()?;
@@ -186,13 +166,13 @@ fn test_http_response_error_handling() -> JingResult<()> {
 async fn test_http_server_requests() -> JingResult<()> {
     init();
 
-    // Start HTTP server
-    let code = r#"
-        let result = start_http_server(8081);
-        print(result);
+    // Start HTTP server and get handle in single execution
+    let start_code = r#"
+        let server = start_http_server(8081);
+        print(server);
     "#;
 
-    let mut lexer = Lexer::new(code);
+    let mut lexer = Lexer::new(start_code);
     let tokens = lexer.tokenize()?;
     let mut parser = Parser::new(tokens);
     let statements = parser.parse()?;
@@ -220,19 +200,19 @@ async fn test_http_server_requests() -> JingResult<()> {
         }
     }
 
-    // Stop the server
-    let code = r#"
-        let result = stop_http_server(8081);
+    // Stop the server using same VM instance so variable is preserved
+    let stop_code = r#"
+        let result = stop_http_server(server);
         print(result);
     "#;
 
-    let mut lexer = Lexer::new(code);
+    let mut lexer = Lexer::new(stop_code);
     let tokens = lexer.tokenize()?;
     let mut parser = Parser::new(tokens);
     let statements = parser.parse()?;
     let mut compiler = Compiler::new();
     let chunk = compiler.compile(statements)?;
-    let mut vm = VM::new();
+    // Reuse the same VM so server variable is available
     vm.interpret(chunk)?;
 
     Ok(())

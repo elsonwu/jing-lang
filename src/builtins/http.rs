@@ -1,9 +1,10 @@
 //! HTTP server builtin functions for Jing language.
 //!
-//! Provides basic HTTP server capabilities including:
+//! Provides extensible HTTP server capabilities including:
 //! - Starting HTTP servers on specified ports
-//! - Handling basic GET/POST requests
-//! - Serving static content and JSON responses
+//! - Registering custom Jing functions as route handlers
+//! - Request/Response object handling
+//! - Built-in default endpoints
 
 use crate::error::{JingError, JingResult};
 use crate::features::BuiltinFunction;
@@ -21,10 +22,27 @@ use std::thread;
 use tokio::net::TcpListener;
 
 /// Global storage for HTTP server state
-static HTTP_SERVERS: OnceLock<Mutex<HashMap<u16, ServerHandle>>> = OnceLock::new();
+static HTTP_SERVERS: OnceLock<Mutex<HashMap<String, ServerHandle>>> = OnceLock::new();
 
-fn get_servers() -> &'static Mutex<HashMap<u16, ServerHandle>> {
+/// Global storage for custom HTTP handlers (server_handle -> routes -> handler)
+static HTTP_HANDLERS: OnceLock<Mutex<HashMap<String, String>>> = OnceLock::new();
+
+fn get_servers() -> &'static Mutex<HashMap<String, ServerHandle>> {
     HTTP_SERVERS.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+fn get_handlers() -> &'static Mutex<HashMap<String, String>> {
+    HTTP_HANDLERS.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+/// Route key for handler registry (server_handle:method:path)
+fn route_key(server_handle: &str, method: &str, path: &str) -> String {
+    format!("{}:{}:{}", server_handle, method, path)
+}
+
+/// Generate unique server handle
+fn generate_server_handle(port: u16) -> String {
+    format!("server_{}", port)
 }
 
 /// Handle for a running HTTP server
@@ -77,13 +95,13 @@ impl BuiltinFunction for StartHttpServerFunction {
             }
         };
 
+        let server_handle = generate_server_handle(port);
+
         // Check if server already running on this port
         let mut servers = get_servers().lock().unwrap();
-        if servers.contains_key(&port) {
-            return Ok(Value::String(format!(
-                "Server already running on port {}",
-                port
-            )));
+        if servers.contains_key(&server_handle) {
+            // Return the existing server handle instead of an error message
+            return Ok(Value::String(server_handle));
         }
 
         // Start the server in a separate thread
@@ -93,7 +111,7 @@ impl BuiltinFunction for StartHttpServerFunction {
             running: running.clone(),
         };
 
-        servers.insert(port, handle);
+        servers.insert(server_handle.clone(), handle);
         drop(servers);
 
         // Start server in background thread
@@ -110,10 +128,7 @@ impl BuiltinFunction for StartHttpServerFunction {
         // Give the server a moment to start
         thread::sleep(std::time::Duration::from_millis(100));
 
-        Ok(Value::String(format!(
-            "HTTP server started on port {}",
-            port
-        )))
+        Ok(Value::String(server_handle))
     }
 }
 
@@ -132,34 +147,37 @@ impl BuiltinFunction for StopHttpServerFunction {
     }
 
     fn help(&self) -> &'static str {
-        "stop_http_server(port) - Stop HTTP server running on specified port"
+        "stop_http_server(server_handle) - Stop HTTP server using server handle"
     }
 
     fn call(&self, args: Vec<Value>) -> JingResult<Value> {
         if args.len() != 1 {
             return Err(JingError::runtime_error(
-                "stop_http_server() expects 1 argument (port)",
+                "stop_http_server() expects 1 argument (server_handle)",
             ));
         }
 
-        let port = match &args[0] {
-            Value::Number(n) => *n as u16,
+        let server_handle = match &args[0] {
+            Value::String(handle) => handle.clone(),
             _ => {
                 return Err(JingError::runtime_error(
-                    "stop_http_server() port must be a number",
+                    "stop_http_server() server_handle must be a string",
                 ))
             }
         };
 
         let mut servers = get_servers().lock().unwrap();
-        if let Some(handle) = servers.remove(&port) {
+        if let Some(handle) = servers.remove(&server_handle) {
             *handle.running.lock().unwrap() = false;
             Ok(Value::String(format!(
-                "HTTP server on port {} stopped",
-                port
+                "HTTP server {} stopped",
+                server_handle
             )))
         } else {
-            Ok(Value::String(format!("No server running on port {}", port)))
+            Ok(Value::String(format!(
+                "No server running with handle {}",
+                server_handle
+            )))
         }
     }
 }
@@ -273,12 +291,13 @@ impl BuiltinFunction for ListHttpServersFunction {
             result.push_str("No HTTP servers running");
         } else {
             result.push_str("Running HTTP servers:\n");
-            for (port, handle) in servers.iter() {
+            for (server_handle, handle) in servers.iter() {
                 let running = *handle.running.lock().unwrap();
                 result.push_str(&format!(
-                    "  Port {}: {}\n",
-                    port,
-                    if running { "running" } else { "stopped" }
+                    "  {}: {} (port {})\n",
+                    server_handle,
+                    if running { "running" } else { "stopped" },
+                    handle.port
                 ));
             }
         }
@@ -287,7 +306,99 @@ impl BuiltinFunction for ListHttpServersFunction {
     }
 }
 
-/// Simple HTTP server implementation
+/// Register HTTP handler builtin function
+/// Usage: http_register_handler(port, method, path, handler_function_name)
+#[derive(Debug)]
+pub struct HttpRegisterHandlerFunction;
+
+impl BuiltinFunction for HttpRegisterHandlerFunction {
+    fn name(&self) -> &'static str {
+        "http_register_handler"
+    }
+
+    fn arity(&self) -> usize {
+        4
+    }
+
+    fn help(&self) -> &'static str {
+        "http_register_handler(server_handle, method, path, handler_function_name) - Register custom handler for HTTP route on specific server"
+    }
+
+    fn call(&self, args: Vec<Value>) -> JingResult<Value> {
+        if args.len() != 4 {
+            return Err(JingError::runtime_error(
+                "http_register_handler() expects 4 arguments (server_handle, method, path, handler_function_name)",
+            ));
+        }
+
+        let server_handle = match &args[0] {
+            Value::String(handle) => handle.clone(),
+            _ => {
+                return Err(JingError::runtime_error(
+                    "http_register_handler() server_handle must be a string",
+                ))
+            }
+        };
+
+        let method = match &args[1] {
+            Value::String(s) => s.to_uppercase(),
+            _ => {
+                return Err(JingError::runtime_error(
+                    "http_register_handler() method must be a string",
+                ))
+            }
+        };
+
+        let path = match &args[2] {
+            Value::String(s) => s.clone(),
+            _ => {
+                return Err(JingError::runtime_error(
+                    "http_register_handler() path must be a string",
+                ))
+            }
+        };
+
+        let handler_name = match &args[3] {
+            Value::String(s) => s.clone(),
+            _ => {
+                return Err(JingError::runtime_error(
+                    "http_register_handler() handler name must be a string",
+                ))
+            }
+        };
+
+        // Validate HTTP method
+        if !matches!(
+            method.as_str(),
+            "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS"
+        ) {
+            return Err(JingError::runtime_error(
+                "Invalid HTTP method. Supported: GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS",
+            ));
+        }
+
+        // Check if server exists with this handle
+        let servers = get_servers().lock().unwrap();
+        if !servers.contains_key(&server_handle) {
+            return Err(JingError::runtime_error(format!(
+                "No HTTP server running with handle {}",
+                server_handle
+            )));
+        }
+        drop(servers);
+
+        // Register the handler for this specific server
+        let mut handlers = get_handlers().lock().unwrap();
+        let key = route_key(&server_handle, &method, &path);
+        handlers.insert(key.clone(), handler_name.clone());
+
+        Ok(Value::String(format!(
+            "Handler '{}' registered for {} {} on server {}",
+            handler_name, method, path, server_handle
+        )))
+    }
+}
+
 async fn start_server(
     port: u16,
     running: Arc<Mutex<bool>>,
@@ -313,7 +424,7 @@ async fn start_server(
                             io,
                             service_fn(move |req| {
                                 let running = running_clone.clone();
-                                handle_request(req, running)
+                                handle_request(req, running, port)
                             }),
                         )
                         .await
@@ -340,7 +451,32 @@ async fn start_server(
 async fn handle_request(
     req: Request<hyper::body::Incoming>,
     _running: Arc<Mutex<bool>>,
+    port: u16,
 ) -> Result<Response<Full<Bytes>>, hyper::Error> {
+    let method = req.method().as_str();
+    let path = req.uri().path();
+
+    // Convert port to server handle
+    let server_handle = generate_server_handle(port);
+
+    // Check for custom handlers first (server-specific)
+    let custom_handler = {
+        let handlers = get_handlers().lock().unwrap();
+        let key = route_key(&server_handle, method, path);
+        handlers.get(&key).cloned()
+    };
+
+    if let Some(_handler_name) = custom_handler {
+        // TODO: For now, return a placeholder response
+        // In a future enhancement, this would call the Jing function
+        let response_body = format!(
+            "Custom handler registered for {} {} (handler calling not yet implemented - this is a placeholder)",
+            method, path
+        );
+        return Ok(Response::new(Full::new(Bytes::from(response_body))));
+    }
+
+    // Fall back to default handlers
     match (req.method(), req.uri().path()) {
         (&Method::GET, "/") => {
             Ok(Response::new(Full::new(Bytes::from(

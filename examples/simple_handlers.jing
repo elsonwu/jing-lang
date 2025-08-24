@@ -1,0 +1,51 @@
+// Simple Handler Function Example
+// Shows the basic pattern for defining HTTP handler functions
+
+print("=== Simple Handler Example ===");
+
+// Define a simple handler function
+fn hello_handler(request) {
+    print("hello_handler was called!");
+    print("Request: " + request);
+    
+    // Create a simple response
+    let response_body = "Hello from Jing HTTP handler!";
+    let response = http_response(200, "text/plain", response_body);
+    return response;
+}
+
+// Define a JSON API handler
+fn api_users_handler(request) {
+    print("api_users_handler was called!");
+    
+    // Return JSON data
+    let json_data = "{\"users\": [\"Alice\", \"Bob\", \"Charlie\"]}";
+    let response = http_response(200, "application/json", json_data);
+    return response;
+}
+
+print("✅ Handler functions defined");
+
+// Start server and register handlers
+let server = start_http_server(8090);
+print("Server started: " + server);
+
+// Register the handlers
+let reg1 = http_register_handler(server, "GET", "/hello", "hello_handler");
+print(reg1);
+
+let reg2 = http_register_handler(server, "GET", "/api/users", "api_users_handler");
+print(reg2);
+
+print("\n=== Ready! ===");
+print("Your handlers are registered at:");
+print("  GET http://127.0.0.1:8090/hello      → hello_handler()");
+print("  GET http://127.0.0.1:8090/api/users  → api_users_handler()");
+print("");
+print("NOTE: Handler function calling is not fully implemented yet.");
+print("These routes currently return placeholder responses.");
+print("But the functions above show how you WOULD define handlers.");
+
+// Clean shutdown
+let stop = stop_http_server(server);
+print("Server stopped: " + stop);

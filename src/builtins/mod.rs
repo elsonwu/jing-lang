@@ -43,6 +43,7 @@ pub fn init_builtins() {
     register_builtin(Arc::new(http::StopHttpServerFunction));
     register_builtin(Arc::new(http::HttpResponseFunction));
     register_builtin(Arc::new(http::ListHttpServersFunction));
+    register_builtin(Arc::new(http::HttpRegisterHandlerFunction));
 }
 
 /// Get all registered builtin function names
