@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.0.0](https://github.com/elsonwu/jing-lang/compare/v0.1.0...v1.0.0) (2025-09-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **simplify:** HTTP server functions are no longer available
+* **http:** HTTP handler registration API changed from port-based to server handle-based. Before: http_register_handler(8080, 'GET', '/path', 'handler') After: let server = start_http_server(8080); http_register_handler(server, 'GET', '/path', 'handler')
+
+### Features
+
+* add I/O capabilities and comprehensive documentation structure ([#4](https://github.com/elsonwu/jing-lang/issues/4)) ([bd618f8](https://github.com/elsonwu/jing-lang/commit/bd618f800d7fc6d192f15e8d823b92d771aacf4f))
+* **http:** Implement Modern Server Handle-Based HTTP Handler System ([#6](https://github.com/elsonwu/jing-lang/issues/6)) ([a9c26f3](https://github.com/elsonwu/jing-lang/commit/a9c26f3ca54db532782034abbf38ebf3eee81f78))
+* implement modular architecture with trait-based builtin system ([#2](https://github.com/elsonwu/jing-lang/issues/2)) ([5f0e342](https://github.com/elsonwu/jing-lang/commit/5f0e3423fedb527f308122770da318aca38d8102))
+* implement recursive function support ([3ee2d22](https://github.com/elsonwu/jing-lang/commit/3ee2d22063e94ae3f7a2ab09ad965849076eed07))
+* **simplify:** remove HTTP server functionality for redesign ([771caaa](https://github.com/elsonwu/jing-lang/commit/771caaae0b8387033ef161dcd7cc14e8b804dfb7))
+
+
+### Bug Fixes
+
+* remove temporary file and improve gitignore ([#5](https://github.com/elsonwu/jing-lang/issues/5)) ([51ef5b2](https://github.com/elsonwu/jing-lang/commit/51ef5b22cfd04c9f22a6b9d66cf5e00df759bab1))
+
 ## [Unreleased]
 
 ### Added
